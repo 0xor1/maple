@@ -1,5 +1,5 @@
-Maple - dotnet starter kit
-=========================
+Maple
+=====
 [![Build Status](https://github.com/0xor1/maple/actions/workflows/build.yml/badge.svg)](https://github.com/0xor1/maple/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/0xor1/maple/badge.svg)](https://coveralls.io/github/0xor1/maple)
 [![Demo Live](https://img.shields.io/badge/demo-live-4ec820)](https://maple.dans-demos.com)
