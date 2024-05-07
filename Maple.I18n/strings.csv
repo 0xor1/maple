@@ -4,7 +4,7 @@ decrement,Decrement
 decrementing,Decrementing
 home,Home
 home_body,<p>Welcome to your new dotnet starter kit.</p><p>You will find:</p><ul><li>Client: a blazor wasm app using radzen ui library</li><li>Server: aspnet with rpc pattern api and entity framework db interface</li></ul>
-home_header,"Hello, Maple!","¡Hola, Maple!","Bonjour, Maple!","Hallo, Maple!","Ciao, Maple!"
+home_header,"Hello, Maple!"
 increment,Increment
 incrementing,Incrementing
 my_counter,My Counter
