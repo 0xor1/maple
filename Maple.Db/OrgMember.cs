@@ -12,7 +12,10 @@ public class OrgMember
     public string Name { get; set; }
     public OrgMemberRole Role { get; set; }
 
+    public string Country { get; set; }
+
     public string Data { get; set; }
 
-    public Api.OrgMember.OrgMember ToApi() => new(Org, Id, Name, Role, Json.To<Data>(Data));
+    public Api.OrgMember.OrgMember ToApi() =>
+        new(Org, Id, Name, Role, Country.ToKey(), Json.To<Data>(Data));
 }

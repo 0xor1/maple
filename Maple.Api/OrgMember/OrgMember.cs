@@ -35,7 +35,14 @@ public static class OrgMemberRpcs
     public static readonly Rpc<Update, OrgMember> Update = new("/org_member/update");
 }
 
-public record OrgMember(string Org, string Id, string Name, OrgMemberRole Role, Data Data);
+public record OrgMember(
+    string Org,
+    string Id,
+    string Name,
+    OrgMemberRole Role,
+    Key Country,
+    Data Data
+);
 
 public record Data(Dictionary<Key, Key> SkillMatrix, Profile Profile);
 
@@ -50,9 +57,16 @@ public record Profile(
 
 public record Get(string Org);
 
-public record Invite(string Org, string Email, string Name, OrgMemberRole Role);
+public record Invite(string Org, string Email, string Name, OrgMemberRole Role, Key Country);
 
-public record Update(string Org, string Id, string? Name, OrgMemberRole? Role);
+public record Update(
+    string Org,
+    string Id,
+    string Name,
+    OrgMemberRole Role,
+    Key Country,
+    Data Data
+);
 
 public record Exact(string Org, string Id);
 

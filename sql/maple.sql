@@ -84,6 +84,7 @@ CREATE TABLE OrgMembers(
     Id VARCHAR(22) NOT NULL,
     Name VARCHAR(250) NOT NULL,
     Role TINYINT UNSIGNED NOT NULL, # 'owner', 'admin', 'member'
+    Country VARCHAR(100) NOT NULL,
     Data TEXT NOT NULL,
     PRIMARY KEY (Org, Id)
 );

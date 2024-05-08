@@ -55,7 +55,7 @@ public record Org(
 
 public record Data(Dictionary<Key, string> Skills, Dictionary<Key, string> ProficiencyLevels);
 
-public record Create(string Name, string OwnerMemberName);
+public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry);
 
 public record Get(OrgOrderBy OrderBy = OrgOrderBy.Name, bool Asc = true);
 

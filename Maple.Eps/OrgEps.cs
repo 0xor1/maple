@@ -9,6 +9,7 @@ using Maple.Api.OrgMember;
 using Maple.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Data = Maple.Api.Org.Data;
 using Exact = Maple.Api.Org.Exact;
 using Get = Maple.Api.Org.Get;
 using Org = Maple.Api.Org.Org;
@@ -52,7 +53,8 @@ public static class OrgEps
                     {
                         Id = Id.New(),
                         Name = req.Name,
-                        CreatedOn = DateTimeExt.UtcNowMilli()
+                        CreatedOn = DateTimeExt.UtcNowMilli(),
+                        Data = Json.From(new Data(new(), new()))
                     };
                     await db.Orgs.AddAsync(newOrg, ctx.Ctkn);
                     var m = new Db.OrgMember()
@@ -60,7 +62,11 @@ public static class OrgEps
                         Org = newOrg.Id,
                         Id = ses.Id,
                         Name = req.OwnerMemberName,
-                        Role = OrgMemberRole.Owner
+                        Role = OrgMemberRole.Owner,
+                        Country = req.OwnerMemberCountry.Value,
+                        Data = Json.From(
+                            new Api.OrgMember.Data(new(), new("", "", "", false, "", null))
+                        )
                     };
                     await db.OrgMembers.AddAsync(m, ctx.Ctkn);
                     return newOrg.ToApi(m);

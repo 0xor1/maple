@@ -48,7 +48,9 @@ internal static class OrgMemberEps
                         Org = req.Org,
                         Id = auth.Id,
                         Name = req.Name,
-                        Role = req.Role
+                        Role = req.Role,
+                        Country = req.Country.Value,
+                        Data = Json.From(new Data(new(), new("", "", "", false, "", null)))
                     };
                     await db.OrgMembers.AddAsync(mem, ctx.Ctkn);
                     if (created)
@@ -111,18 +113,21 @@ internal static class OrgMemberEps
                     ctx.InsufficientPermissionsIf(updateMem.Role < sesRole);
                     if (
                         updateMem is { Role: OrgMemberRole.Owner }
-                        && ((req.Role != null && req.Role != OrgMemberRole.Owner))
+                        && req.Role != OrgMemberRole.Owner
                     )
                     {
                         // a live org owner is being downgraded permissions or being deactivated completely,
                         // need to ensure that org is not left without any owners
                         var ownerCount = await db.OrgMembers.CountAsync(
-                            x => x.Org == req.Org && x.Role == OrgMemberRole.Owner
+                            x => x.Org == req.Org && x.Role == OrgMemberRole.Owner,
+                            ctx.Ctkn
                         );
                         ctx.InsufficientPermissionsIf(ownerCount == 1);
                     }
-                    updateMem.Name = req.Name ?? updateMem.Name;
-                    updateMem.Role = req.Role ?? updateMem.Role;
+                    updateMem.Name = req.Name;
+                    updateMem.Role = req.Role;
+                    updateMem.Country = req.Country.Value;
+                    updateMem.Data = Json.From(req.Data);
                     return updateMem.NotNull().ToApi();
                 }
             )
