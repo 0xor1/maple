@@ -8,3 +8,14 @@ home_header,"Hello, Maple!"
 increment,Increment
 incrementing,Incrementing
 my_counter,My Counter
+org_member_invite_email_html,"<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the organisation: <strong>{{OrgName}}</strong></p><p><a href=""{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
+org_member_invite_email_subject,{{OrgName}} - Project Management Invite
+org_member_invite_email_text,"Dear {{InviteeName}}
+
+{{InvitedByName}} has invited you to join the organisation: {{OrgName}}
+
+Please click this link to verify your email address and join {{OrgName}}:
+
+{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
+org_too_many,You are already a member of too many Orgs
+string_validation,"Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}"

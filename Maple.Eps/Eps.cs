@@ -19,11 +19,12 @@ public static class MapleEps
                             5,
                             true,
                             5,
-                            CounterEps.OnAuthActivation,
-                            CounterEps.OnAuthDelete,
-                            CounterEps.AuthValidateFcmTopic
+                            OrgEps.AuthOnActivation,
+                            OrgEps.AuthOnDelete,
+                            OrgEps.AuthValidateFcmTopic
                         ).Eps;
-                eps.AddRange(CounterEps.Eps);
+                eps.AddRange(OrgEps.Eps);
+                eps.AddRange(OrgMemberEps.Eps);
                 _eps = eps;
             }
 

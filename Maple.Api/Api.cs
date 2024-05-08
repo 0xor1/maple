@@ -1,12 +1,14 @@
 using Common.Shared;
 using Common.Shared.Auth;
-using Maple.Api.Counter;
+using Maple.Api.Org;
+using Maple.Api.OrgMember;
 
 namespace Maple.Api;
 
 public interface IApi : Common.Shared.Auth.IApi
 {
-    public ICounterApi Counter { get; }
+    public IOrgApi Org { get; }
+    public IOrgMemberApi OrgMember { get; }
 }
 
 public class Api : IApi
@@ -15,10 +17,12 @@ public class Api : IApi
     {
         App = new AppApi(client);
         Auth = new AuthApi(client);
-        Counter = new CounterApi(client);
+        Org = new OrgApi(client);
+        OrgMember = new OrgMemberApi(client);
     }
 
     public IAppApi App { get; }
     public IAuthApi Auth { get; }
-    public ICounterApi Counter { get; }
+    public IOrgApi Org { get; }
+    public IOrgMemberApi OrgMember { get; }
 }
