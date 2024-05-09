@@ -4,12 +4,7 @@ Maple
 [![Coverage Status](https://coveralls.io/repos/github/0xor1/maple/badge.svg)](https://coveralls.io/github/0xor1/maple)
 [![Demo Live](https://img.shields.io/badge/demo-live-4ec820)](https://maple.dans-demos.com)
 
-This project is the basic starting point for my dotnet based projects, 
-revolving around the primary technologies:
-
-* Client - Blazor WASM
-* Server - Aspnet core with RPC pattern
-* DB - Ef core
+A simple HR management tool, to track skill proficiencies nad profiles.
 
 ### Prerequisites
 
