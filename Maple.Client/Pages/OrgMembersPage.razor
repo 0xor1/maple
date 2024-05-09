@@ -1,0 +1,12 @@
+﻿@page "/org/{OrgId}/members"
+@using Maple.I18n
+@inject L L;
+<PageTitle>@L.S(S.OrgMembers)</PageTitle>
+<OrgMembers OrgId="@OrgId"/>
+
+@code{
+
+    [Parameter]
+    public string OrgId { get; set; }
+
+}

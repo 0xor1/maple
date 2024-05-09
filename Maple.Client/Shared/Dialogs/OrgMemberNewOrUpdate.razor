@@ -1,0 +1,116 @@
+﻿@using Common.Shared
+@using Common.Shared.Auth
+@using Maple.Api.OrgMember
+@using Maple.Client.Lib
+@using AuthValidator = Common.Client.AuthValidator
+@using CS = Common.Shared.I18n.S
+@using IApi = Maple.Api.IApi
+@using S = Maple.I18n.S
+<div class="root col ov-v">
+    <RadzenTemplateForm
+        TItem="Model"
+        Data="_model"
+        Submit="Do"
+        class="flx col ai-stretch g-1">
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="OrgName" Text="@L.S(S.Name)"/>
+            <RadzenTextBox Name="Name" @bind-Value="@_model.Name"/>
+            <RadzenRequiredValidator Component="Name" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        @if (UpdateMember == null)
+        {
+            <div class="flx col ai-stretch">
+                <RadzenLabel class="m-b-0q" Component="Email" Text="@L.S(CS.Email)"/>
+                <RadzenTextBox Name="Email" @bind-Value="@_model.Email"/>
+                <CommonCustomValidator Component="Email" Popup="true" Validator="AuthValidator.EmailValidator"/>
+            </div>
+        }
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="Role" Text="@L.S(S.OrgMemberRole)"/>
+            <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
+        </div>
+        <div class="flx g-0h jc-stretch">
+            <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(UpdateMember != null? L.S(CS.Update): L.S(S.Invite))"/>
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary" IsBusy="_doing" Text="@L.S(S.Cancel)" Click="@(_ => DialogService.Close())"/>
+        </div>
+    </RadzenTemplateForm>
+</div>
+
+@inject L L;
+@inject UiCtx Ctx;
+@inject IApi Api;
+@inject DialogService DialogService;
+@code {
+
+    [Parameter]
+    public string OrgId { get; set; }
+
+    [Parameter]
+    public ISession Session { get; set; }
+
+    [Parameter]
+    public OrgMember? UpdateMember { get; set; }
+
+    [Parameter]
+    public Func<OrgMember, Task>? OnUpdated { get; set; } 
+
+    [Parameter]
+    public Func<OrgMember, Task>? OnInvited { get; set; }
+
+    public class Model
+    {
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+        public OrgMemberRole Role { get; set; } = OrgMemberRole.Member;
+        public Key Country { get; set; } = Util.Country.Afghanistan;
+        public Data Data { get; set; } = new(new Dictionary<Key, Key>(), new Profile("", "", "", false, "", null));
+    }
+
+    Model _model = new();
+    private bool _doing;
+
+    protected override Task OnInitializedAsync()
+    {
+        
+        if (UpdateMember != null)
+        {
+            _model.Name = UpdateMember.Name;
+            _model.Role = UpdateMember.Role;
+            _model.Country = UpdateMember.Country;
+            _model.Data = UpdateMember.Data;
+        }
+        return Task.CompletedTask;
+    }
+    
+    private async Task Do()
+    {
+        _doing = true;
+        try
+        {
+            if (UpdateMember == null)
+            {
+                var mem = await Api.OrgMember.Invite(new(OrgId, _model.Email, _model.Name, _model.Role, _model.Country));
+                if (OnInvited != null)
+                {
+                    await OnInvited(mem);
+                }
+            }
+            else
+            {
+                var mem = await Api.OrgMember.Update(new(OrgId, UpdateMember.Id, _model.Name, _model.Role, _model.Country, _model.Data));
+                if (OnUpdated != null)
+                {
+                    await OnUpdated(mem);
+                }
+            }
+            DialogService.Close();
+        }
+        catch
+        {
+            // use empty catch to avoid having to
+            // call StatHasChanged on errors
+        }
+        _doing = false;
+    }
+
+}

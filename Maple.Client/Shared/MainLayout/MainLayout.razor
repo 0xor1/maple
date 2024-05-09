@@ -5,10 +5,17 @@
                 <AppHeader @bind-LeftExpanded="_leftExpanded"/>
                 <RadzenSidebar @bind-Expanded="@_leftExpanded">
                     <RadzenPanelMenu>
-                        <RadzenPanelMenuItem class="goto-home" Text="@L.S(S.Home)" Icon="home" Path="/" Click="CollapseIfNarrow"/>
-                        @if (_session.IsAuthed)
+                        @if (_session.IsAnon)
                         {
-                            <RadzenPanelMenuItem class="goto-my-counter" Text="@L.S(S.Counter)" Icon="star" Path="@($"/{_session.Id}/counter")" Click="CollapseIfNarrow"/>
+                            <RadzenPanelMenuItem Text="@L.S(S.Home)" Icon="home" Path="/" Click="CollapseIfNarrow"/>
+                        }
+                        else
+                        {
+                            <RadzenPanelMenuItem Text="@L.S(S.OrgMyOrgs)" Icon="corporate_fare" Path="/my_orgs" Click="CollapseIfNarrow"/>
+                            @if (_orgId != null)
+                            {
+                                <RadzenPanelMenuItem Text="@L.S(S.OrgMembers)" Icon="group" Path="@($"/org/{_orgId}/members")" Click="CollapseIfNarrow"/>
+                            }
                         }
                     </RadzenPanelMenu>
                 </RadzenSidebar>
@@ -28,28 +35,69 @@
 </div>
 @using Common.Client.Layout
 @using Common.Shared.Auth
+@using Maple.Api.Org
+@using Maple.Client.Lib
 @using S = Maple.I18n.S
 @using CS = Common.Shared.I18n.S
+@using IApi = Maple.Api.IApi
 @inherits LayoutComponentBase
 @inject IAuthService Auth;
 @inject L L;
+@inject UiCtx Ctx
+@inject NavigationManager Nav
+@inject IApi Api
 @inject IJSRuntime Js;
+@implements IDisposable
 @code{
 
     private bool _leftExpanded;
     private ISession _session = Session.CommonDefault();
     private bool _ready;
+    private IDisposable? _eventReg;
+    private string? _orgId;
     protected override async Task OnInitializedAsync()
     {
         Auth.OnSessionChanged(OnSessionChanged);
         OnSessionChanged(await Auth.GetSession());
+        _eventReg = Nav.RegisterLocationChangingHandler(LocationChanging);
+        await SetCtxFromUrl(Nav.Uri);
         _ready = true;
     }
+
+    private async ValueTask LocationChanging(LocationChangingContext arg)
+        => await SetCtxFromUrl(arg.TargetLocation);
 
     private void OnSessionChanged(ISession s)
     {
         _session = s;
         InvokeAsync(StateHasChanged).Wait();
+    }
+    
+    private async ValueTask SetCtxFromUrl(string url)
+    {
+        // check for /org/{OrgId}/project/{ProjectId}/task/{TaskId}
+        string? orgId = null;
+        var orgMatch = OrgIdRx().Match(url);
+        if (orgMatch.Success && orgMatch.Groups.Count == 2)
+        {
+            orgId = orgMatch.Groups[1].Value;
+        }
+        
+    
+        var changed = _orgId != orgId;
+        _orgId = orgId;
+        if (_orgId != null && changed)
+        {
+            await Ctx.Set(await Api.Org.GetOne(new (_orgId)));
+        }
+        else if (changed)
+        {
+            await Ctx.Set((Org?)null);
+        }
+        if (changed)
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task CollapseIfNarrow(MouseEventArgs args)
@@ -57,6 +105,11 @@
         var width = await Js.InvokeAsync<decimal>("getWidth");
         if(width < 50)
             _leftExpanded = false;
+    }
+
+    public void Dispose()
+    {
+        _eventReg?.Dispose();
     }
 
 }

@@ -9,7 +9,7 @@
         <div class="flx m-t-0h ai-c g-1">
             @if (Session.IsAuthed)
             {
-                <RadzenButton class="goto-my-counter" ButtonStyle="ButtonStyle.Primary" Text="@L.S(S.MyCounter)" Click="@(() => Nav.NavigateTo($"/{Session.Id}/counter"))"/>
+                <RadzenButton class="goto-my-orgs" ButtonStyle="ButtonStyle.Primary" Text="@L.S(S.OrgMyOrgs)" Click="@(() => Nav.NavigateTo($"/my_orgs"))"/>
             }
             else
             {

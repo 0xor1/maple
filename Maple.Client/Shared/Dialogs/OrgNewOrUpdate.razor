@@ -1,0 +1,93 @@
+﻿@using Common.Shared
+@using Maple.Api
+@using Maple.Api.Org
+@using Maple.Util
+@using CS = Common.Shared.I18n.S
+@using S = Maple.I18n.S
+<div class="root col">
+    <RadzenTemplateForm
+        TItem="Model"
+        Data="_model"
+        Submit="Do"
+        class="flx col ai-stretch g-1">
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="OrgName" Text="@L.S(S.OrgName)"/>
+            <RadzenTextBox Name="OrgName" @bind-Value="@_model.OrgName"/>
+            <RadzenRequiredValidator Component="OrgName" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        @if (UpdateOrg == null)
+        {
+            <div class="flx col ai-stretch">
+                <RadzenLabel class="m-b-0q" Component="OwnerName" Text="@L.S(S.OrgYourName)"/>
+                <RadzenTextBox Name="OwnerName" @bind-Value="@_model.OwnerName"/>
+                <RadzenRequiredValidator Component="OwnerName" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+            </div>
+        }
+        <div class="flx g-0h jc-stretch">
+            <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(UpdateOrg != null? L.S(CS.Update): L.S(S.Create))"/>
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary" IsBusy="_doing" Text="@L.S(S.Cancel)" Click="@(_ => DialogService.Close())"/>
+        </div>
+    </RadzenTemplateForm>
+</div>
+
+@inject L L;
+@inject IApi Api;
+@inject NavigationManager Nav;
+@inject DialogService DialogService;
+@code {
+    
+    [Parameter]
+    public Org? UpdateOrg { get; set; }
+
+    [Parameter]
+    public Func<Org, Task>? OnUpdated { get; set; }
+
+    public class Model
+    {
+        public string OrgName { get; set; } = "";
+        public string OwnerName { get; set; } = "";
+        public Key OwnerCountry { get; set; } = Country.Afghanistan;
+    }
+
+    Model _model = new();
+    private bool _doing;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (UpdateOrg != null)
+        {
+            _model.OrgName = UpdateOrg.Name;
+        }
+        return Task.CompletedTask;
+    }
+    
+    private async Task Do()
+    {
+        _doing = true;
+        try
+        {
+            if (UpdateOrg == null)
+            {
+                var org = await Api.Org.Create(new(_model.OrgName, _model.OwnerName, _model.OwnerCountry));
+                Nav.NavigateTo($"/org/{org.Id}/projects");
+            }
+            else
+            {
+                var org = await Api.Org.Update(new(UpdateOrg.Id, _model.OrgName));
+                if (OnUpdated != null)
+                {
+                    await OnUpdated(org);
+                }
+                DialogService.Close();
+            }
+        }
+        catch
+        {
+            // use empty catch to avoid having to
+            // call StatHasChanged on errors
+        }
+        _doing = false;
+        
+    }
+
+}
