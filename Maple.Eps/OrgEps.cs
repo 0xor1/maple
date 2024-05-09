@@ -38,99 +38,87 @@ public static class OrgEps
     public static IReadOnlyList<IEp> Eps { get; } =
         new List<IEp>()
         {
-            Ep<Create, Org>.DbTx<MapleDb>(
-                OrgRpcs.Create,
-                async (ctx, db, ses, req) =>
-                {
-                    var activeOrgs = await db.OrgMembers.CountAsync(x => x.Id == ses.Id, ctx.Ctkn);
-                    ctx.ErrorIf(
-                        activeOrgs > MaxActiveOrgs,
-                        S.OrgTooMany,
-                        null,
-                        HttpStatusCode.BadRequest
-                    );
-                    var newOrg = new Db.Org()
-                    {
-                        Id = Id.New(),
-                        Name = req.Name,
-                        CreatedOn = DateTimeExt.UtcNowMilli(),
-                        Data = Json.From(new Data(new(), new()))
-                    };
-                    await db.Orgs.AddAsync(newOrg, ctx.Ctkn);
-                    var m = new Db.OrgMember()
-                    {
-                        Org = newOrg.Id,
-                        Id = ses.Id,
-                        Name = req.OwnerMemberName,
-                        Role = OrgMemberRole.Owner,
-                        Country = req.OwnerMemberCountry.Value,
-                        Data = Json.From(
-                            new Api.OrgMember.Data(new(), new("", "", "", false, "", null))
-                        )
-                    };
-                    await db.OrgMembers.AddAsync(m, ctx.Ctkn);
-                    return newOrg.ToApi(m);
-                }
-            ),
-            new Ep<Exact, Org>(
-                OrgRpcs.GetOne,
-                async (ctx, req) =>
-                {
-                    var ses = ctx.GetSession();
-                    var db = ctx.Get<MapleDb>();
-                    var org = await db.Orgs.SingleOrDefaultAsync(x => x.Id == req.Id, ctx.Ctkn);
-                    ctx.NotFoundIf(org == null, model: new { Name = "Org" });
-                    var m = await db.OrgMembers.SingleOrDefaultAsync(
-                        x => x.Org == req.Id && x.Id == ses.Id,
-                        ctx.Ctkn
-                    );
-                    return org.NotNull().ToApi(m);
-                }
-            ),
-            new Ep<Get, IReadOnlyList<Org>>(
-                OrgRpcs.Get,
-                async (ctx, req) =>
-                {
-                    var ses = ctx.GetAuthedSession();
-                    var db = ctx.Get<MapleDb>();
-                    var ms = await db.OrgMembers.Where(x => x.Id == ses.Id).ToListAsync(ctx.Ctkn);
-                    var oIds = ms.Select(x => x.Org);
-                    var qry = db.Orgs.Where(x => oIds.Contains(x.Id));
-                    qry = req switch
-                    {
-                        (OrgOrderBy.Name, true) => qry.OrderBy(x => x.Name),
-                        (OrgOrderBy.CreatedOn, true) => qry.OrderBy(x => x.CreatedOn),
-                        (OrgOrderBy.Name, false) => qry.OrderByDescending(x => x.Name),
-                        (OrgOrderBy.CreatedOn, false) => qry.OrderByDescending(x => x.CreatedOn),
-                    };
-                    var os = await qry.ToListAsync(ctx.Ctkn);
-                    return os.Select(x => x.ToApi(ms.Single(y => y.Org == x.Id))).ToList();
-                }
-            ),
-            Ep<Update, Org>.DbTx<MapleDb>(
-                OrgRpcs.Update,
-                async (ctx, db, ses, req) =>
-                {
-                    var m = await db.OrgMembers.SingleOrDefaultAsync(
-                        x => x.Org == req.Id && x.Id == ses.Id,
-                        ctx.Ctkn
-                    );
-                    ctx.InsufficientPermissionsIf(m?.Role != OrgMemberRole.Owner);
-                    var org = await db.Orgs.SingleAsync(x => x.Id == req.Id, ctx.Ctkn);
-                    org.Name = req.Name;
-                    return org.ToApi(m);
-                }
-            ),
-            Ep<Exact, Nothing>.DbTx<MapleDb>(
-                OrgRpcs.Delete,
-                async (ctx, db, ses, req) =>
-                {
-                    await EpsUtil.MustHaveOrgAccess(ctx, db, ses.Id, req.Id, OrgMemberRole.Owner);
-                    await RawBatchDelete(ctx, db, new List<string>() { req.Id });
-                    return Nothing.Inst;
-                }
-            )
+            Ep<Create, Org>.DbTx<MapleDb>(OrgRpcs.Create, Create),
+            new Ep<Exact, Org>(OrgRpcs.GetOne, GetOne),
+            new Ep<Get, IReadOnlyList<Org>>(OrgRpcs.Get, Get),
+            Ep<Update, Org>.DbTx<MapleDb>(OrgRpcs.Update, Update),
+            Ep<Exact, Nothing>.DbTx<MapleDb>(OrgRpcs.Delete, Delete)
         };
+
+    private static async Task<Org> Create(IRpcCtx ctx, MapleDb db, ISession ses, Create arg)
+    {
+        var activeOrgs = await db.OrgMembers.CountAsync(x => x.Id == ses.Id, ctx.Ctkn);
+        ctx.ErrorIf(activeOrgs > MaxActiveOrgs, S.OrgTooMany, null, HttpStatusCode.BadRequest);
+        var newOrg = new Db.Org()
+        {
+            Id = Id.New(),
+            Name = arg.Name,
+            CreatedOn = DateTimeExt.UtcNowMilli(),
+            Data = Json.From(new Data(new(), new()))
+        };
+        await db.Orgs.AddAsync(newOrg, ctx.Ctkn);
+        var m = new Db.OrgMember()
+        {
+            Org = newOrg.Id,
+            Id = ses.Id,
+            Name = arg.OwnerMemberName,
+            Role = OrgMemberRole.Owner,
+            Country = arg.OwnerMemberCountry.Value,
+            Data = Json.From(new Api.OrgMember.Data(new(), new("", "", "", false, "", null)))
+        };
+        await db.OrgMembers.AddAsync(m, ctx.Ctkn);
+        return newOrg.ToApi(m);
+    }
+
+    private static async Task<Org> GetOne(IRpcCtx ctx, Exact arg)
+    {
+        var ses = ctx.GetSession();
+        var db = ctx.Get<MapleDb>();
+        var org = await db.Orgs.SingleOrDefaultAsync(x => x.Id == arg.Id, ctx.Ctkn);
+        ctx.NotFoundIf(org == null, model: new { Name = "Org" });
+        var m = await db.OrgMembers.SingleOrDefaultAsync(
+            x => x.Org == arg.Id && x.Id == ses.Id,
+            ctx.Ctkn
+        );
+        return org.NotNull().ToApi(m);
+    }
+
+    private static async Task<IReadOnlyList<Org>> Get(IRpcCtx ctx, Get arg)
+    {
+        var ses = ctx.GetAuthedSession();
+        var db = ctx.Get<MapleDb>();
+        var ms = await db.OrgMembers.Where(x => x.Id == ses.Id).ToListAsync(ctx.Ctkn);
+        var oIds = ms.Select(x => x.Org);
+        var qry = db.Orgs.Where(x => oIds.Contains(x.Id));
+        qry = arg switch
+        {
+            (OrgOrderBy.Name, true) => qry.OrderBy(x => x.Name),
+            (OrgOrderBy.CreatedOn, true) => qry.OrderBy(x => x.CreatedOn),
+            (OrgOrderBy.Name, false) => qry.OrderByDescending(x => x.Name),
+            (OrgOrderBy.CreatedOn, false) => qry.OrderByDescending(x => x.CreatedOn),
+        };
+        var os = await qry.ToListAsync(ctx.Ctkn);
+        return os.Select(x => x.ToApi(ms.Single(y => y.Org == x.Id))).ToList();
+    }
+
+    private static async Task<Org> Update(IRpcCtx ctx, MapleDb db, ISession ses, Update arg)
+    {
+        var m = await db.OrgMembers.SingleOrDefaultAsync(
+            x => x.Org == arg.Id && x.Id == ses.Id,
+            ctx.Ctkn
+        );
+        ctx.InsufficientPermissionsIf(m?.Role != OrgMemberRole.Owner);
+        var org = await db.Orgs.SingleAsync(x => x.Id == arg.Id, ctx.Ctkn);
+        org.Name = arg.Name;
+        return org.ToApi(m);
+    }
+
+    private static async Task<Nothing> Delete(IRpcCtx ctx, MapleDb db, ISession ses, Exact arg)
+    {
+        await EpsUtil.MustHaveOrgAccess(ctx, db, ses.Id, arg.Id, OrgMemberRole.Owner);
+        await RawBatchDelete(ctx, db, new List<string>() { arg.Id });
+        return Nothing.Inst;
+    }
 
     public static async Task AuthOnDelete(IRpcCtx ctx, MapleDb db, ISession ses)
     {
