@@ -75,7 +75,7 @@
 
     private void RowClick(DataGridRowMouseEventArgs<Org> e)
     {
-        Nav.NavigateTo($"/org/{e.Data.Id}/projects");
+        Nav.NavigateTo($"/org/{e.Data.Id}/members");
     }
     
     private async Task Update(Org o)

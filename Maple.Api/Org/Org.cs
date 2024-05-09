@@ -55,11 +55,11 @@ public record Org(
 
 public record Data(Dictionary<Key, string> Skills, Dictionary<Key, string> ProficiencyLevels);
 
-public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry);
+public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry, Data Data);
 
 public record Get(OrgOrderBy OrderBy = OrgOrderBy.Name, bool Asc = true);
 
-public record Update(string Id, string Name);
+public record Update(string Id, string Name, Data Data);
 
 public record Exact(string Id);
 

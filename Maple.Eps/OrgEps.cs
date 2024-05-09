@@ -54,7 +54,7 @@ public static class OrgEps
             Id = Id.New(),
             Name = arg.Name,
             CreatedOn = DateTimeExt.UtcNowMilli(),
-            Data = Json.From(new Data(new(), new()))
+            Data = Json.From(arg.Data)
         };
         await db.Orgs.AddAsync(newOrg, ctx.Ctkn);
         var m = new Db.OrgMember()
@@ -110,6 +110,8 @@ public static class OrgEps
         ctx.InsufficientPermissionsIf(m?.Role != OrgMemberRole.Owner);
         var org = await db.Orgs.SingleAsync(x => x.Id == arg.Id, ctx.Ctkn);
         org.Name = arg.Name;
+        org.Data = Json.From(arg.Data);
+        // TODO should work out if any of the data was changed and remove any deleted values from the org members data
         return org.ToApi(m);
     }
 
