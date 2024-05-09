@@ -7,7 +7,7 @@ created_on,Created On
 delete,Delete
 edit,Edit
 home,Home
-home_body,"<p>Welcome to Maple.</p><p>Maple is a HR resource management tool, it tracks skills proficiencies and individual profiles</p>"
+home_body,"<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
 home_header,"Hello, Maple!"
 invite,Invite
 loading,Loading

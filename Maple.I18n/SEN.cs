@@ -23,7 +23,7 @@ public static partial class S
             {
                 HomeBody,
                 new(
-                    "<p>Welcome to Maple.</p><p>Maple is a HR resource management tool, it tracks skills proficiencies and individual profiles</p>"
+                    "<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
                 )
             },
             { HomeHeader, new("Hello, Maple!") },
