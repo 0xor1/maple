@@ -39,6 +39,7 @@ public static partial class S
     public const string OrgTooMany = "org_too_many";
     public const string OrgUpdateMember = "org_update_member";
     public const string OrgUpdateOrg = "org_update_org";
+    public const string OrgYourCountry = "org_your_country";
     public const string OrgYourName = "org_your_name";
     public const string Required = "required";
     public const string StringValidation = "string_validation";

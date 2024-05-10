@@ -1,6 +1,7 @@
 ﻿@using Common.Shared
 @using Maple.Api
 @using Maple.Api.Org
+@using Maple.Client.Lib
 @using Maple.Util
 @using CS = Common.Shared.I18n.S
 @using S = Maple.I18n.S
@@ -21,6 +22,11 @@
                 <RadzenLabel class="m-b-0q" Component="OwnerName" Text="@L.S(S.OrgYourName)"/>
                 <RadzenTextBox Name="OwnerName" @bind-Value="@_model.OwnerName"/>
                 <RadzenRequiredValidator Component="OwnerName" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+            </div>
+            <div class="flx col ai-stretch">
+                <RadzenLabel class="m-b-0q" Component="OwnerCountry" Text="@L.S(S.OrgYourCountry)"/>
+                <RadzenDropDown TValue="Key" Data="Countries" ValueProperty="Key" TextProperty="Display" Name="OwnerCountry" @bind-Value="@_model.OwnerCountry" AllowClear="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
+                <RadzenRequiredValidator Component="OwnerCountry" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
             </div>
         }
         <div class="flx g-0h jc-stretch">
@@ -50,8 +56,11 @@
         public Data Data { get; set; } = new Data(new (), new ());
     }
 
+    private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();
+
     Model _model = new();
     private bool _doing;
+
 
     protected override Task OnInitializedAsync()
     {
@@ -62,7 +71,7 @@
         }
         return Task.CompletedTask;
     }
-    
+
     private async Task Do()
     {
         _doing = true;

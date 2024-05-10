@@ -64,6 +64,7 @@ public static partial class S
             { OrgTooMany, new("You are already a member of too many Orgs") },
             { OrgUpdateMember, new("Update Member") },
             { OrgUpdateOrg, new("Update Org") },
+            { OrgYourCountry, new("Your Country") },
             { OrgYourName, new("Your Name") },
             { Required, new("Required") },
             {
