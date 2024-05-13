@@ -17,7 +17,7 @@
             <RadzenTextBox Name="Name" @bind-Value="@_model.Name"/>
             <RadzenRequiredValidator Component="Name" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
         </div>
-        @if (UpdateMember == null)
+        @if (Ctx.OrgMember == null)
         {
             <div class="flx col ai-stretch">
                 <RadzenLabel class="m-b-0q" Component="Email" Text="@L.S(CS.Email)"/>
@@ -30,8 +30,7 @@
             <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
         </div>
         <div class="flx g-0h jc-stretch">
-            <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(UpdateMember != null? L.S(CS.Update): L.S(S.Invite))"/>
-            <RadzenButton ButtonStyle="ButtonStyle.Secondary" IsBusy="_doing" Text="@L.S(S.Cancel)" Click="@(_ => DialogService.Close())"/>
+            <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.OrgMember != null? L.S(CS.Update): L.S(S.Invite))"/>
         </div>
     </RadzenTemplateForm>
 </div>
@@ -39,17 +38,13 @@
 @inject L L;
 @inject UiCtx Ctx;
 @inject IApi Api;
-@inject DialogService DialogService;
 @code {
 
     [Parameter]
     public string OrgId { get; set; }
 
     [Parameter]
-    public ISession Session { get; set; }
-
-    [Parameter]
-    public OrgMember? UpdateMember { get; set; }
+    public string? UpdateMemberId { get; set; }
 
     [Parameter]
     public Func<OrgMember, Task>? OnUpdated { get; set; } 
@@ -72,12 +67,12 @@
     protected override Task OnInitializedAsync()
     {
         
-        if (UpdateMember != null)
+        if (Ctx.OrgMember != null)
         {
-            _model.Name = UpdateMember.Name;
-            _model.Role = UpdateMember.Role;
-            _model.Country = UpdateMember.Country;
-            _model.Data = UpdateMember.Data;
+            _model.Name = Ctx.OrgMember.Name;
+            _model.Role = Ctx.OrgMember.Role;
+            _model.Country = Ctx.OrgMember.Country;
+            _model.Data = Ctx.OrgMember.Data;
         }
         return Task.CompletedTask;
     }
@@ -87,7 +82,7 @@
         _doing = true;
         try
         {
-            if (UpdateMember == null)
+            if (Ctx.OrgMember == null)
             {
                 var mem = await Api.OrgMember.Invite(new(OrgId, _model.Email, _model.Name, _model.Role, _model.Country));
                 if (OnInvited != null)
@@ -97,13 +92,12 @@
             }
             else
             {
-                var mem = await Api.OrgMember.Update(new(OrgId, UpdateMember.Id, _model.Name, _model.Role, _model.Country, _model.Data));
+                var mem = await Api.OrgMember.Update(new(OrgId, Ctx.OrgMember.Id, _model.Name, _model.Role, _model.Country, _model.Data));
                 if (OnUpdated != null)
                 {
                     await OnUpdated(mem);
                 }
             }
-            DialogService.Close();
         }
         catch
         {

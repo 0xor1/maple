@@ -53,10 +53,12 @@ public static partial class S
                     "Dear {{InviteeName}}\n\n{{InvitedByName}} has invited you to join the org: {{OrgName}}\n\nPlease click this link to verify your email address and join {{OrgName}}:\n\n{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
                 )
             },
+            { OrgMemberNewOrgMember, new("New Member") },
             { OrgMemberRole, new("Role") },
             { OrgMemberRoleAdmin, new("Admin") },
             { OrgMemberRoleOwner, new("Owner") },
             { OrgMemberRoleMember, new("Member") },
+            { OrgMemberUpdateOrgMember, new("Update Member") },
             { OrgMembers, new("Members") },
             { OrgMyOrgs, new("My Orgs") },
             { OrgName, new("Org Name") },

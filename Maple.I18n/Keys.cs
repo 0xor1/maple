@@ -28,10 +28,12 @@ public static partial class S
     public const string OrgMemberInviteEmailHtml = "org_member_invite_email_html";
     public const string OrgMemberInviteEmailSubject = "org_member_invite_email_subject";
     public const string OrgMemberInviteEmailText = "org_member_invite_email_text";
+    public const string OrgMemberNewOrgMember = "org_member_new_org_member";
     public const string OrgMemberRole = "org_member_role";
     public const string OrgMemberRoleAdmin = "org_member_role_admin";
     public const string OrgMemberRoleOwner = "org_member_role_owner";
     public const string OrgMemberRoleMember = "org_member_role_member";
+    public const string OrgMemberUpdateOrgMember = "org_member_update_org_member";
     public const string OrgMembers = "org_members";
     public const string OrgMyOrgs = "org_my_orgs";
     public const string OrgName = "org_name";

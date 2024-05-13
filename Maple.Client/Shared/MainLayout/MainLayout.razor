@@ -55,6 +55,7 @@
     private bool _ready;
     private IDisposable? _eventReg;
     private string? _orgId;
+    private string? _orgMemberId;
     protected override async Task OnInitializedAsync()
     {
         Auth.OnSessionChanged(OnSessionChanged);
@@ -75,27 +76,27 @@
     
     private async ValueTask SetCtxFromUrl(string url)
     {
-        // check for /org/{OrgId}/project/{ProjectId}/task/{TaskId}
+        // check for /org/{OrgId}/member/{MemberId}
         string? orgId = null;
         var orgMatch = OrgIdRx().Match(url);
         if (orgMatch.Success && orgMatch.Groups.Count == 2)
         {
             orgId = orgMatch.Groups[1].Value;
         }
+        string? memberId = null;
+        var memberMatch = MemberIdRx().Match(url);
+        if (memberMatch.Success && memberMatch.Groups.Count == 2)
+        {
+            memberId = memberMatch.Groups[1].Value;
+        }
         
     
-        var changed = _orgId != orgId;
+        var changed = _orgId != orgId || _orgMemberId != memberId;
         _orgId = orgId;
-        if (_orgId != null && changed)
-        {
-            await Ctx.Set(await Api.Org.GetOne(new (_orgId)));
-        }
-        else if (changed)
-        {
-            await Ctx.Set((Org?)null);
-        }
+        _orgMemberId = memberId;
         if (changed)
         {
+            await Ctx.Set(_orgId, _orgMemberId);
             StateHasChanged();
         }
     }

@@ -12,14 +12,16 @@ public class UiCtx
     private readonly IAuthService _auth;
 
     public string? OrgId { get; private set; }
+    public string? OrgMemberId { get; private set; }
     public Org? Org { get; private set; }
 
     public List<OrgMember> OrgMembers { get; private set; } = new();
     public OrgMember? OrgMember { get; private set; }
+    public OrgMember? SesOrgMember { get; private set; }
 
-    public bool HasOrgOwnerPerm => OrgMember?.Role == OrgMemberRole.Owner;
+    public bool HasOrgOwnerPerm => SesOrgMember?.Role == OrgMemberRole.Owner;
 
-    public bool HasOrgAdminPerm => OrgMember?.Role == OrgMemberRole.Admin;
+    public bool HasOrgAdminPerm => SesOrgMember?.Role == OrgMemberRole.Admin;
 
     public UiCtx(IApi api, IAuthService auth)
     {
@@ -27,32 +29,29 @@ public class UiCtx
         _auth = auth;
     }
 
-    public async Task Set(Org? org)
+    public async Task Set(string? orgId, string? orgMemberId)
     {
         await _ss.WaitAsync();
         try
         {
-            // no white space shenanigans
-            var orgId = org?.Id;
-
-            var orgChanged = OrgId != orgId;
-
             OrgId = orgId;
-            var ses = (await _auth.GetSession());
+            OrgMemberId = orgMemberId;
+            var ses = await _auth.GetSession();
             var sesId = ses.Id;
 
             if (OrgId == null)
             {
                 Org = null;
+                OrgMembers = new List<OrgMember>();
                 OrgMember = null;
+                SesOrgMember = null;
+                return;
             }
 
-            if (orgChanged && OrgId != null)
-            {
-                Org = org ?? await _api.Org.GetOne(new(OrgId));
-                OrgMembers = (await _api.OrgMember.Get(new(OrgId)));
-                OrgMember = OrgMembers.SingleOrDefault(x => x.Id == ses.Id);
-            }
+            Org = await _api.Org.GetOne(new(OrgId));
+            OrgMembers = (await _api.OrgMember.Get(new(OrgId)));
+            OrgMember = OrgMembers.FirstOrDefault(x => x.Id == orgMemberId);
+            SesOrgMember = OrgMembers.FirstOrDefault(x => x.Id == sesId);
         }
         finally
         {

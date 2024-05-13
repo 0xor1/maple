@@ -26,10 +26,12 @@ org_member_invite_email_text,"Dear {{InviteeName}}
 Please click this link to verify your email address and join {{OrgName}}:
 
 {{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
+org_member_new_org_member,New Member
 org_member_role,Role
 org_member_role_admin,Admin
 org_member_role_owner,Owner
 org_member_role_member,Member
+org_member_update_org_member,Update Member
 org_members,Members
 org_my_orgs,My Orgs
 org_name,Org Name
