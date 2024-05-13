@@ -1,0 +1,10 @@
+﻿@page "/org/{OrgId}/update"
+@using Maple.I18n
+@inject L L;
+<PageTitle>@L.S(S.OrgUpdateOrg)</PageTitle>
+<OrgNewOrUpdate UpdateOrgId="@OrgId"/>
+
+@code{
+    [Parameter]
+    public string OrgId { get; set; }
+}

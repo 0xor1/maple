@@ -1,13 +1,12 @@
 ﻿@using Common.Shared.Auth
 @using Maple.Api.Org
 @using Maple.Api.OrgMember
-@using Maple.Client.Shared.Dialogs
 @using IApi = Maple.Api.IApi
 @using S = Maple.I18n.S
 
 <div class="root col p-0h g-0h jc-s ai-s">
     <RadzenText class="m-t-0" TextStyle="TextStyle.H2">@L.S(S.OrgMyOrgs)</RadzenText>
-    <RadzenButton class="m-b-1" ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="@L.S(S.New)" Click="@OpenNewDialog"/>
+    <RadzenButton class="m-b-1" ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="@L.S(S.New)" Click="@New"/>
     <RadzenDataGrid
         @ref="_grid"
         Data="Items"
@@ -24,11 +23,14 @@
                 <Template Context="o">
                     <div class="flx child-no-shrink jc-s ai-c g-0h w-100 mw-100 p-rel">
                         <span title="@o.Name" class="shrink-1 ellip">@o.Name</span>
-                        @if (o.Member?.Role == OrgMemberRole.Owner)
+                        @if (o.Member?.Role is OrgMemberRole.Owner or OrgMemberRole.Admin)
                         {
                             <div class="flx g-0q p-abs show-on-row-mouse-over" style="right: -1em;">
                                 <RadzenButton @onclick:stopPropagation="true" Icon="edit" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.ExtraSmall" Click="_ => Update(o)"/>
-                                <RadzenButton @onclick:stopPropagation="true" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall" Click="_ => Delete(o)"/>
+                                @if (o.Member.Role is OrgMemberRole.Owner)
+                                {
+                                    <RadzenButton @onclick:stopPropagation="true" Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall" Click="_ => Delete(o)"/>
+                                }
                             </div>
                         }
                     </div>
@@ -70,23 +72,16 @@
         }
     }
 
-    private async Task OpenNewDialog() 
-        => await DialogService.OpenAsync<OrgNewOrUpdate>(L.S(S.OrgNewOrg));
+    private void New() 
+        => Nav.NavigateTo($"/org_new");
 
     private void RowClick(DataGridRowMouseEventArgs<Org> e)
     {
         Nav.NavigateTo($"/org/{e.Data.Id}/members");
     }
     
-    private async Task Update(Org o)
-        => await DialogService.OpenAsync<OrgNewOrUpdate>(L.S(S.OrgUpdateOrg), new (){{"UpdateOrg", o}, {"OnUpdated", OnUpdated}});
-
-    private async Task OnUpdated(Org o)
-    {
-        var i = Items.FindIndex(x => x.Id == o.Id);
-        Items[i] = o;
-        await _grid.Reload();
-    }
+    private void Update(Org o)
+        => Nav.NavigateTo($"/org/{o.Id}/update");
 
     private async Task Delete(Org o)
     {

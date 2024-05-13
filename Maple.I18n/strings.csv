@@ -5,20 +5,23 @@ confirm,Confirm
 create,Create
 created_on,Created On
 delete,Delete
+display,Display
 edit,Edit
 home,Home
 home_body,"<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
 home_header,"Hello, Maple!"
 invite,Invite
+key,Key
 loading,Loading
 name,Name
 new,New
-org_confirm_delete_org,<p>Are you sure you want to delete the organisation <strong>{{Name}}</strong>?</p><p>This can not be undone.</p>
-org_member_invite_email_html,"<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the organisation: <strong>{{OrgName}}</strong></p><p><a href=""{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
+one_per_line,One per line
+org_confirm_delete_org,<p>Are you sure you want to delete the org <strong>{{Name}}</strong>?</p><p>This can not be undone.</p>
+org_member_invite_email_html,"<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=""{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
 org_member_invite_email_subject,{{OrgName}} - Project Management Invite
 org_member_invite_email_text,"Dear {{InviteeName}}
 
-{{InvitedByName}} has invited you to join the organisation: {{OrgName}}
+{{InvitedByName}} has invited you to join the org: {{OrgName}}
 
 Please click this link to verify your email address and join {{OrgName}}:
 
@@ -29,7 +32,7 @@ org_member_role_owner,Owner
 org_member_role_member,Member
 org_members,Members
 org_my_orgs,My Orgs
-org_name,Organisation Name
+org_name,Org Name
 org_new_member,New Member
 org_new_org,New Org
 org_no_members,No Members
@@ -39,7 +42,9 @@ org_update_member,Update Member
 org_update_org,Update Org
 org_your_country,Your Country
 org_your_name,Your Name
+proficiency_levels,Proficiency Levels
 required,Required
+skills,Skills
 string_validation,"Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}"
 afghanistan,"Afghanistan"
 albania,"Albania"

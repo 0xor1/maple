@@ -53,7 +53,9 @@ public record Org(
     OrgMember.OrgMember? Member
 );
 
-public record Data(Dictionary<Key, string> Skills, Dictionary<Key, string> ProficiencyLevels);
+public record KeyDisplay(Key Key, string Display);
+
+public record Data(List<string> Skills, List<string> ProficiencyLevels);
 
 public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry, Data Data);
 

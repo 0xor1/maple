@@ -18,6 +18,7 @@ public static partial class S
             { Create, new("Create") },
             { CreatedOn, new("Created On") },
             { Delete, new("Delete") },
+            { Display, new("Display") },
             { Edit, new("Edit") },
             { Home, new("Home") },
             {
@@ -28,26 +29,29 @@ public static partial class S
             },
             { HomeHeader, new("Hello, Maple!") },
             { Invite, new("Invite") },
+            { Key, new("Key") },
             { Loading, new("Loading") },
             { Name, new("Name") },
             { New, new("New") },
+            { NoProficiencyLevels, new("No proficiency levels") },
+            { OnePerLine, new("One per line") },
             {
                 OrgConfirmDeleteOrg,
                 new(
-                    "<p>Are you sure you want to delete the organisation <strong>{{Name}}</strong>?</p><p>This can not be undone.</p>"
+                    "<p>Are you sure you want to delete the org <strong>{{Name}}</strong>?</p><p>This can not be undone.</p>"
                 )
             },
             {
                 OrgMemberInviteEmailHtml,
                 new(
-                    "<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the organisation: <strong>{{OrgName}}</strong></p><p><a href=\"{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}\">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
+                    "<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=\"{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}\">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
                 )
             },
             { OrgMemberInviteEmailSubject, new("{{OrgName}} - Project Management Invite") },
             {
                 OrgMemberInviteEmailText,
                 new(
-                    "Dear {{InviteeName}}\n\n{{InvitedByName}} has invited you to join the organisation: {{OrgName}}\n\nPlease click this link to verify your email address and join {{OrgName}}:\n\n{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
+                    "Dear {{InviteeName}}\n\n{{InvitedByName}} has invited you to join the org: {{OrgName}}\n\nPlease click this link to verify your email address and join {{OrgName}}:\n\n{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
                 )
             },
             { OrgMemberRole, new("Role") },
@@ -56,7 +60,7 @@ public static partial class S
             { OrgMemberRoleMember, new("Member") },
             { OrgMembers, new("Members") },
             { OrgMyOrgs, new("My Orgs") },
-            { OrgName, new("Organisation Name") },
+            { OrgName, new("Org Name") },
             { OrgNewMember, new("New Member") },
             { OrgNewOrg, new("New Org") },
             { OrgNoMembers, new("No Members") },
@@ -66,7 +70,9 @@ public static partial class S
             { OrgUpdateOrg, new("Update Org") },
             { OrgYourCountry, new("Your Country") },
             { OrgYourName, new("Your Name") },
+            { ProficiencyLevels, new("Proficiency Levels") },
             { Required, new("Required") },
+            { Skills, new("Skills") },
             {
                 StringValidation,
                 new("Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}")

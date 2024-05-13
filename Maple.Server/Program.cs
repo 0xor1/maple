@@ -3,4 +3,4 @@ using Maple.Db;
 using Maple.Eps;
 using Maple.I18n;
 
-Server.Run<MapleDb>(args, S.Inst, MapleEps.Eps);
+Server.Run<MapleDb>(args, S.Inst, MapleEps.Eps, OrgEps.AddServices, OrgEps.InitApp);

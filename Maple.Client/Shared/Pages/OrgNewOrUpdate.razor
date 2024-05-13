@@ -1,0 +1,112 @@
+﻿@using Common.Shared
+@using Maple.Api
+@using Maple.Api.Org
+@using Maple.Client.Lib
+@using Maple.Util
+@using CS = Common.Shared.I18n.S
+@using S = Maple.I18n.S
+<RadzenTemplateForm TItem="Model"
+                    Data="_model"
+                    Submit="Do" class="root col p-0h g-1 jc-s ai-s">
+    <RadzenText class="m-0" TextStyle="TextStyle.H2">@(Ctx.Org == null? L.S(S.OrgNewOrg): L.S(S.OrgUpdateOrg))</RadzenText>
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Component="OrgName" Text="@L.S(S.OrgName)"/>
+        <RadzenTextBox Name="OrgName" @bind-Value="@_model.OrgName"/>
+        <RadzenRequiredValidator Component="OrgName" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+    </div>
+    @if (Ctx.Org == null)
+    {
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="OwnerName" Text="@L.S(S.OrgYourName)"/>
+            <RadzenTextBox Name="OwnerName" @bind-Value="@_model.OwnerName"/>
+            <RadzenRequiredValidator Component="OwnerName" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="OwnerCountry" Text="@L.S(S.OrgYourCountry)"/>
+            <RadzenDropDown TValue="Key" Data="Countries" ValueProperty="Key" TextProperty="Display" Name="OwnerCountry" @bind-Value="@_model.OwnerCountry" AllowClear="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
+            <RadzenRequiredValidator Component="OwnerCountry" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+    }
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Text="@L.S(S.ProficiencyLevels)"/>
+        <RadzenText class="m-b-0q" TextStyle="TextStyle.Caption" Text="@L.S(S.OnePerLine)"/>
+        <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawProfLevels"/>
+    </div>
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Text="@L.S(S.Skills)"/>
+        <RadzenText class="m-b-0q" TextStyle="TextStyle.Caption" Text="@L.S(S.OnePerLine)"/>
+        <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawSkills"/>
+    </div>
+    
+    <div class="flx g-0h jc-stretch">
+        <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.Org != null? L.S(CS.Update): L.S(S.Create))"/>
+    </div>
+</RadzenTemplateForm>
+
+@inject L L;
+@inject IApi Api;
+@inject UiCtx Ctx;
+@inject NavigationManager Nav;
+@code {
+    
+    [Parameter]
+    public string? UpdateOrgId { get; set; }
+
+    public class Model
+    {
+        public string OrgName { get; set; } = "";
+        public string OwnerName { get; set; } = "";
+        public Key OwnerCountry { get; set; } = Country.Afghanistan;
+        public string RawProfLevels {
+            get => string.Join('\n', Data.ProficiencyLevels);
+            set => Data = Data with { ProficiencyLevels = value.Split('\n').Select(x => x.Trim()).ToList()};
+        }
+        public string RawSkills {
+            get => string.Join('\n', Data.Skills);
+            set => Data = Data with { Skills = value.Split('\n').Select(x => x.Trim()).ToList()};
+        }
+        public Data Data { get; set; } = new Data(new (), new ());
+    }
+
+    private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();
+
+    Model _model = new();
+    private bool _doing;
+
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Ctx.Org != null)
+        {
+            _model.OrgName = Ctx.Org.Name;
+            _model.Data = Ctx.Org.Data;
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task Do()
+    {
+        _doing = true;
+        try
+        {
+            Org? org = null;
+            if (Ctx.Org == null)
+            {
+                org = await Api.Org.Create(new(_model.OrgName, _model.OwnerName, _model.OwnerCountry, _model.Data));
+            }
+            else
+            {
+                org = await Api.Org.Update(new(Ctx.Org.Id, _model.OrgName, _model.Data));
+            }
+            Nav.NavigateTo($"/org/{org.Id}/members");
+        }
+        catch
+        {
+            // use empty catch to avoid having to
+            // call StatHasChanged on errors
+        }
+        _doing = false;
+        
+    }
+
+}
