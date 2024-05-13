@@ -49,7 +49,7 @@ public record OrgMember(
     Data Data
 );
 
-public record Data(Dictionary<Key, Key> SkillMatrix, Profile Profile);
+public record Data(Dictionary<string, ExpLevel> SkillMatrix, Profile Profile);
 
 public record Profile(
     string Title,
@@ -86,4 +86,13 @@ public enum OrgMemberOrderBy
 {
     Role,
     Name
+}
+
+public enum ExpLevel
+{
+    None,
+    Low,
+    Mid,
+    High,
+    Expert
 }

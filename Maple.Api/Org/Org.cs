@@ -55,7 +55,7 @@ public record Org(
 
 public record KeyDisplay(Key Key, string Display);
 
-public record Data(List<string> Skills, List<string> ProficiencyLevels, string ProfileTemplate);
+public record Data(List<string> Skills, string ProfileTemplate);
 
 public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry, Data Data);
 

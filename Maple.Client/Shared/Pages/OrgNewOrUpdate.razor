@@ -29,10 +29,6 @@
         </div>
     }
     <div class="flx col ai-stretch">
-        <RadzenLabel class="m-b-0q" Text="@L.S(S.ProficiencyLevels)"/>
-        <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawProfLevels"/>
-    </div>
-    <div class="flx col ai-stretch">
         <RadzenLabel class="m-b-0q" Text="@L.S(S.Skills)"/>
         <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawSkills"/>
     </div>
@@ -62,10 +58,6 @@
         public string OrgName { get; set; } = "";
         public string OwnerName { get; set; } = "";
         public Key OwnerCountry { get; set; } = Country.Afghanistan;
-        public string RawProfLevels {
-            get => string.Join('\n', Data.ProficiencyLevels);
-            set => Data = Data with { ProficiencyLevels = value.Split('\n').Select(x => x.Trim()).ToList()};
-        }
         public string RawSkills {
             get => string.Join('\n', Data.Skills);
             set => Data = Data with { Skills = value.Split('\n').Select(x => x.Trim()).ToList()};
@@ -74,7 +66,7 @@
             get => Data.ProfileTemplate;
             set => Data = Data with { ProfileTemplate = _sanitizer.Sanitize(value) };
         }
-        public Data Data { get; set; } = new Data(new (), new (), "");
+        public Data Data { get; set; } = new Data(new (), "");
     }
 
     private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();

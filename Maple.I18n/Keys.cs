@@ -15,6 +15,11 @@ public static partial class S
     public const string Delete = "delete";
     public const string Display = "display";
     public const string Edit = "edit";
+    public const string ExpLevelExpert = "exp_level_expert";
+    public const string ExpLevelHigh = "exp_level_high";
+    public const string ExpLevelLow = "exp_level_low";
+    public const string ExpLevelMid = "exp_level_mid";
+    public const string ExpLevelNone = "exp_level_none";
     public const string Home = "home";
     public const string HomeBody = "home_body";
     public const string HomeHeader = "home_header";

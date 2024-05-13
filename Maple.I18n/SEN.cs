@@ -20,6 +20,11 @@ public static partial class S
             { Delete, new("Delete") },
             { Display, new("Display") },
             { Edit, new("Edit") },
+            { ExpLevelExpert, new("Teacher") },
+            { ExpLevelHigh, new("Highly Proficient") },
+            { ExpLevelLow, new("No Production") },
+            { ExpLevelMid, new("Rusty") },
+            { ExpLevelNone, new("No Experience") },
             { Home, new("Home") },
             {
                 HomeBody,

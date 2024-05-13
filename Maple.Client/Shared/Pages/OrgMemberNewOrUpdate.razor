@@ -58,7 +58,7 @@
         public string Email { get; set; } = "";
         public OrgMemberRole Role { get; set; } = OrgMemberRole.Member;
         public Key Country { get; set; } = Util.Country.Afghanistan;
-        public Data Data { get; set; } = new(new Dictionary<Key, Key>(), new Profile("", "", "", false, "", null));
+        public Data Data { get; set; } = new(new (), new ("", "", "", false, "", null));
     }
 
     Model _model = new();

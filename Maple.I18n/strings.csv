@@ -7,6 +7,11 @@ created_on,Created On
 delete,Delete
 display,Display
 edit,Edit
+exp_level_expert,Teacher
+exp_level_high,Highly Proficient
+exp_level_low,No Production
+exp_level_mid,Rusty
+exp_level_none,No Experience
 home,Home
 home_body,"<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
 home_header,"Hello, Maple!"
