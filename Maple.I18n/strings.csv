@@ -43,6 +43,7 @@ org_update_org,Update Org
 org_your_country,Your Country
 org_your_name,Your Name
 proficiency_levels,Proficiency Levels
+profile_template,Profile Template
 required,Required
 skills,Skills
 string_validation,"Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}"

@@ -1,4 +1,5 @@
 ﻿@using Common.Shared
+@using Ganss.Xss
 @using Maple.Api
 @using Maple.Api.Org
 @using Maple.Client.Lib
@@ -37,6 +38,10 @@
         <RadzenText class="m-b-0q" TextStyle="TextStyle.Caption" Text="@L.S(S.OnePerLine)"/>
         <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawSkills"/>
     </div>
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Text="@L.S(S.ProfileTemplate)"/>
+        <RadzenTextArea Rows="15" Cols="50" @bind-Value="_model.RawProfileTemplate"/>
+    </div>
     
     <div class="flx g-0h jc-stretch">
         <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.Org != null? L.S(CS.Update): L.S(S.Create))"/>
@@ -52,6 +57,8 @@
     [Parameter]
     public string? UpdateOrgId { get; set; }
 
+    private static IHtmlSanitizer _sanitizer = new HtmlSanitizer();
+
     public class Model
     {
         public string OrgName { get; set; } = "";
@@ -65,7 +72,11 @@
             get => string.Join('\n', Data.Skills);
             set => Data = Data with { Skills = value.Split('\n').Select(x => x.Trim()).ToList()};
         }
-        public Data Data { get; set; } = new Data(new (), new ());
+        public string RawProfileTemplate {
+            get => Data.ProfileTemplate;
+            set => Data = Data with { ProfileTemplate = _sanitizer.Sanitize(value) };
+        }
+        public Data Data { get; set; } = new Data(new (), new (), "");
     }
 
     private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();

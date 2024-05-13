@@ -33,7 +33,6 @@ public static partial class S
             { Loading, new("Loading") },
             { Name, new("Name") },
             { New, new("New") },
-            { NoProficiencyLevels, new("No proficiency levels") },
             { OnePerLine, new("One per line") },
             {
                 OrgConfirmDeleteOrg,
@@ -71,6 +70,7 @@ public static partial class S
             { OrgYourCountry, new("Your Country") },
             { OrgYourName, new("Your Name") },
             { ProficiencyLevels, new("Proficiency Levels") },
+            { ProfileTemplate, new("Profile Template") },
             { Required, new("Required") },
             { Skills, new("Skills") },
             {

@@ -23,7 +23,6 @@ public static partial class S
     public const string Loading = "loading";
     public const string Name = "name";
     public const string New = "new";
-    public const string NoProficiencyLevels = "no_proficiency_levels";
     public const string OnePerLine = "one_per_line";
     public const string OrgConfirmDeleteOrg = "org_confirm_delete_org";
     public const string OrgMemberInviteEmailHtml = "org_member_invite_email_html";
@@ -46,6 +45,7 @@ public static partial class S
     public const string OrgYourCountry = "org_your_country";
     public const string OrgYourName = "org_your_name";
     public const string ProficiencyLevels = "proficiency_levels";
+    public const string ProfileTemplate = "profile_template";
     public const string Required = "required";
     public const string Skills = "skills";
     public const string StringValidation = "string_validation";
