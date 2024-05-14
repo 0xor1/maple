@@ -64,7 +64,7 @@ public static class OrgEps
             Name = arg.OwnerMemberName,
             Role = OrgMemberRole.Owner,
             Country = arg.OwnerMemberCountry.Value,
-            Data = Json.From(new Api.OrgMember.Data(new(), new("", "", "", false, "", null)))
+            Data = Json.From(new Api.OrgMember.Data(new(), new("", "", "", false, "", 0, "", null)))
         };
         await db.OrgMembers.AddAsync(m, ctx.Ctkn);
         return newOrg.ToApi(m);

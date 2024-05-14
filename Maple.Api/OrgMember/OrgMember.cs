@@ -7,6 +7,9 @@ public interface IOrgMemberApi
     public Task<OrgMember> Invite(Invite arg, CancellationToken ctkn = default);
     public Task<List<OrgMember>> Get(Get arg, CancellationToken ctkn = default);
     public Task<OrgMember> Update(Update arg, CancellationToken ctkn = default);
+    public Task<OrgMember> UploadImage(UploadImage arg, CancellationToken ctkn = default);
+    public Task<HasStream> DownloadImage(DownloadImage arg, CancellationToken ctkn = default);
+    public string DownloadUrl(DownloadImage arg);
     public Task Delete(Exact arg, CancellationToken ctkn = default);
 }
 
@@ -28,6 +31,15 @@ public class OrgMemberApi : IOrgMemberApi
     public Task<OrgMember> Update(Update arg, CancellationToken ctkn = default) =>
         _client.Do(OrgMemberRpcs.Update, arg, ctkn);
 
+    public Task<OrgMember> UploadImage(UploadImage arg, CancellationToken ctkn = default) =>
+        _client.Do(OrgMemberRpcs.UploadImage, arg, ctkn);
+
+    public Task<HasStream> DownloadImage(DownloadImage arg, CancellationToken ctkn = default) =>
+        _client.Do(OrgMemberRpcs.DownloadImage, arg, ctkn);
+
+    public string DownloadUrl(DownloadImage arg) =>
+        _client.GetUrl(OrgMemberRpcs.DownloadImage, arg);
+
     public Task Delete(Exact arg, CancellationToken ctkn = default) =>
         _client.Do(OrgMemberRpcs.Delete, arg, ctkn);
 }
@@ -37,6 +49,10 @@ public static class OrgMemberRpcs
     public static readonly Rpc<Invite, OrgMember> Invite = new("/org_member/invite");
     public static readonly Rpc<Get, List<OrgMember>> Get = new("/org_member/get");
     public static readonly Rpc<Update, OrgMember> Update = new("/org_member/update");
+    public static readonly Rpc<UploadImage, OrgMember> UploadImage =
+        new("/org_member/upload_image", 10 * Size.MB);
+    public static readonly Rpc<DownloadImage, HasStream> DownloadImage =
+        new("/org_member/download_image");
     public static readonly Rpc<Exact, Nothing> Delete = new("/org_member/delete");
 }
 
@@ -56,6 +72,8 @@ public record Profile(
     string Body,
     string CsvSkills,
     bool HasImage,
+    string ImageType,
+    ulong ImageSize,
     string GithubUrl,
     string? LinkedInUrl
 );
@@ -96,3 +114,7 @@ public enum ExpLevel
     High,
     Expert
 }
+
+public record UploadImage(string Org, string Id) : HasStream;
+
+public record DownloadImage(string Org, string Id, bool IsDownload);

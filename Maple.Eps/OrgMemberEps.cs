@@ -18,6 +18,8 @@ internal static class OrgMemberEps
             Ep<Invite, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.Invite, Invite),
             Ep<Get, List<OrgMember>>.DbTx<MapleDb>(OrgMemberRpcs.Get, Get),
             Ep<Update, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.Update, Update),
+            Ep<UploadImage, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.UploadImage, UploadImage),
+            Ep<DownloadImage, HasStream>.DbTx<MapleDb>(OrgMemberRpcs.DownloadImage, DownloadImage),
             Ep<Exact, Nothing>.DbTx<MapleDb>(OrgMemberRpcs.Delete, Delete)
         };
 
@@ -54,7 +56,7 @@ internal static class OrgMemberEps
             Name = arg.Name,
             Role = arg.Role,
             Country = arg.Country.Value,
-            Data = Json.From(new Data(new(), new("", "", "", false, "", null)))
+            Data = Json.From(new Data(new(), new("", "", "", false, "", 0, "", null)))
         };
         await db.OrgMembers.AddAsync(mem, ctx.Ctkn);
         if (created)
@@ -98,13 +100,13 @@ internal static class OrgMemberEps
         var sesOrgMem = await db.OrgMembers
             .Where(x => x.Org == arg.Org && x.Id == ses.Id)
             .SingleOrDefaultAsync(ctx.Ctkn);
-        // msut be a member
+        // must be a member
         ctx.InsufficientPermissionsIf(sesOrgMem == null);
         var sesRole = sesOrgMem.NotNull().Role;
         // must be an owner or admin, and admins cant make members owners
         ctx.InsufficientPermissionsIf(
-            sesRole is not (OrgMemberRole.Owner or OrgMemberRole.Admin)
-                || (sesRole is OrgMemberRole.Admin && arg.Role == OrgMemberRole.Owner)
+            arg.Role < sesRole
+                || (ses.Id != arg.Id && sesRole is not (OrgMemberRole.Owner or OrgMemberRole.Admin))
         );
         var updateMem = await db.OrgMembers.SingleOrDefaultAsync(
             x => x.Org == arg.Org && x.Id == arg.Id,
@@ -130,6 +132,97 @@ internal static class OrgMemberEps
         updateMem.Country = arg.Country.Value;
         updateMem.Data = Json.From(arg.Data);
         return updateMem.NotNull().ToApi();
+    }
+
+    private static async Task<OrgMember> UploadImage(
+        IRpcCtx ctx,
+        MapleDb db,
+        ISession ses,
+        UploadImage arg
+    )
+    {
+        var sesOrgMem = await db.OrgMembers
+            .Where(x => x.Org == arg.Org && x.Id == ses.Id)
+            .SingleOrDefaultAsync(ctx.Ctkn);
+        // msut be a member
+        ctx.InsufficientPermissionsIf(sesOrgMem == null);
+        var sesRole = sesOrgMem.NotNull().Role;
+        // must be an owner or admin, and admins cant make members owners
+        ctx.InsufficientPermissionsIf(
+            ses.Id != arg.Id && sesRole is not (OrgMemberRole.Owner or OrgMemberRole.Admin)
+        );
+        var updateMem = await db.OrgMembers.SingleOrDefaultAsync(
+            x => x.Org == arg.Org && x.Id == arg.Id,
+            ctx.Ctkn
+        );
+        // update target must exist
+        ctx.NotFoundIf(updateMem == null);
+        updateMem.NotNull();
+        // cant update a member with high permissions than you
+        ctx.InsufficientPermissionsIf(updateMem.Role < sesRole);
+        var store = ctx.Get<IStoreClient>();
+        await store.Upload(
+            OrgEps.FilesBucket,
+            string.Join("/", arg.Org, arg.Id),
+            arg.Stream.Type,
+            arg.Stream.Size,
+            arg.Stream.Data,
+            ctx.Ctkn
+        );
+        var res = updateMem.ToApi();
+        res = res with
+        {
+            Data = res.Data with
+            {
+                Profile = res.Data.Profile with
+                {
+                    HasImage = true,
+                    ImageSize = arg.Stream.Size,
+                    ImageType = arg.Stream.Type
+                }
+            }
+        };
+        updateMem.Data = Json.From(res.Data);
+        return res;
+    }
+
+    private static async Task<HasStream> DownloadImage(
+        IRpcCtx ctx,
+        MapleDb db,
+        ISession ses,
+        DownloadImage arg
+    )
+    {
+        var sesOrgMem = await db.OrgMembers
+            .Where(x => x.Org == arg.Org && x.Id == ses.Id)
+            .SingleOrDefaultAsync(ctx.Ctkn);
+        // msut be a member
+        ctx.InsufficientPermissionsIf(sesOrgMem == null);
+        var mem = await db.OrgMembers.SingleOrDefaultAsync(
+            x => x.Org == arg.Org && x.Id == arg.Id,
+            ctx.Ctkn
+        );
+        // update target must exist
+        ctx.NotFoundIf(mem == null);
+        mem.NotNull();
+        var res = mem.ToApi();
+        ctx.NotFoundIf(!res.Data.Profile.HasImage);
+        var store = ctx.Get<IStoreClient>();
+        var data = await store.Download(
+            OrgEps.FilesBucket,
+            string.Join("/", arg.Org, arg.Id),
+            ctx.Ctkn
+        );
+        return new HasStream()
+        {
+            Stream = new RpcStream(
+                data,
+                "profile_image",
+                res.Data.Profile.ImageType,
+                arg.IsDownload,
+                res.Data.Profile.ImageSize
+            )
+        };
     }
 
     private static async Task<Nothing> Delete(IRpcCtx ctx, MapleDb db, ISession ses, Exact arg)
