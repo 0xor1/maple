@@ -21,7 +21,7 @@ public class UiCtx
 
     public bool HasOrgOwnerPerm => SesOrgMember?.Role == OrgMemberRole.Owner;
 
-    public bool HasOrgAdminPerm => SesOrgMember?.Role == OrgMemberRole.Admin;
+    public bool HasOrgAdminPerm => SesOrgMember?.Role <= OrgMemberRole.Admin;
 
     public UiCtx(IApi api, IAuthService auth)
     {

@@ -7,7 +7,7 @@
 
 <div class="root col p-0h g-0h jc-s ai-s">
     <RadzenText class="m-t-0" TextStyle="TextStyle.H2">@L.S(S.OrgMembers)</RadzenText>
-    <RadzenButton class="m-b-1" ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="@L.S(S.Invite)" Click="@OpenNewDialog"/>
+    <RadzenButton class="m-b-1" ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" Text="@L.S(S.Invite)" Click="@GoToNew"/>
     <RadzenDataGrid
         @ref="_grid"
         Count="Count"
@@ -27,7 +27,7 @@
                 <Template Context="m">
                     <div class="flx child-no-shrink jc-s ai-c g-0h w-100 mw-100 p-rel">
                         <span class="shrink-1 ellip">@m.Name</span>
-                        @if (Ctx.HasOrgAdminPerm && m.Role >= Ctx.OrgMember?.Role)
+                        @if (Ctx.HasOrgAdminPerm && m.Role >= Ctx.SesOrgMember?.Role)
                         {
                             <div class="flx g-0q p-abs show-on-row-mouse-over" style="right: -1em;">
                                 <RadzenButton @onclick:stopPropagation="true" Icon="edit" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.ExtraSmall" Click="_ => Update(m)"/>
@@ -54,7 +54,6 @@
 @inject L L;
 @inject IApi Api;
 @inject NavigationManager Nav;
-@inject DialogService DialogService;
 @inject UiCtx Ctx;
 @code{
 
@@ -87,8 +86,8 @@
         }
     }
 
-    private async Task OpenNewDialog()
-        => await DialogService.OpenAsync<OrgMemberNewOrUpdate>(L.S(S.OrgNewMember), new (){{"OrgId", OrgId}, {"Session", Session}});
+    private async Task GoToNew()
+        => Nav.NavigateTo($"/org/{OrgId}/member_new");
 
     private async Task LoadData(LoadDataArgs arg)
     {
@@ -124,22 +123,10 @@
             _isLoading = false;
         }
     }
-    
-    private async Task Update(OrgMember m)
-        => await DialogService.OpenAsync<OrgMemberNewOrUpdate>(L.S(S.OrgUpdateMember), new (){{"OrgId", OrgId}, {"UpdateMember", m}, {"Session", Session}, {"OnInvited", OnInvited}, {"OnUpdated", OnUpdated}});
 
-    private async Task OnInvited(OrgMember m)
-    {
-        Items = Items.Append(m).ToList();
-        await _grid.Reload();
-    }
-    
-    private async Task OnUpdated(OrgMember m)
-    {
-        var i = Items.FindIndex(x => x.Id == m.Id);
-        Items[i] = m;
-        await _grid.Reload();
-    }
+    private async Task Update(OrgMember m)
+        => Nav.NavigateTo($"/org/{OrgId}/member/{m.Id}/update");
+            
     
     public static List<RoleOpt> Roles(L l, UiCtx? ctx = null)
     {
