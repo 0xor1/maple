@@ -18,9 +18,9 @@
         EmptyText="@L.S(S.OrgNoMembers)"
         FilterPopupRenderMode="PopupRenderMode.OnDemand" 
         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+        AllowColumnPicking="true"
         AllowSorting="true" 
         AllowFiltering="true"
-        AllowPaging="true"
         LoadData="LoadData"
         KeyProperty="Id">
         <Columns>
@@ -164,6 +164,15 @@
                 (OrgMemberOrderBy.Name, false) => qry.OrderByDescending(x => x.Name.ToLower()),
                 (OrgMemberOrderBy.Role, false) => qry.OrderByDescending(x => x.Role).ThenBy(x => x.Name.ToLower())
             };
+
+            foreach (var f in arg.Filters?.Where(x => x.FilterValue is ExpLevel) ?? new List<FilterDescriptor>())
+            {
+                qry = qry.Where(x =>
+                {
+                    var maybe = x.Data.SkillMatrix.Try(f.Property);
+                    return maybe.Got && maybe.Val >= (f.FilterValue as ExpLevel?).NotNull();
+                });
+            }
 
             Items = qry.ToList();
         }

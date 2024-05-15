@@ -56,26 +56,56 @@ public class UiCtx
                     new(
                         Org.Id,
                         "a",
-                        "a",
+                        "Andrew Price",
                         OrgMemberRole.Admin,
                         new("algeria"),
-                        new(new(), new("", "", "", false, "", 0, "", null))
+                        new(
+                            new()
+                            {
+                                { "Javascript", ExpLevel.None },
+                                { "Typescript", ExpLevel.Low },
+                                { "AWS", ExpLevel.Mid },
+                                { "SQL", ExpLevel.High },
+                                { "Mariadb", ExpLevel.Expert }
+                            },
+                            new("", "", "", false, "", 0, "", null)
+                        )
                     ),
                     new(
                         Org.Id,
                         "b",
-                        "b",
+                        "Benjamin Button",
                         OrgMemberRole.Member,
-                        new("algeria"),
-                        new(new(), new("", "", "", false, "", 0, "", null))
+                        new("italy"),
+                        new(
+                            new()
+                            {
+                                { "Javascript", ExpLevel.Expert },
+                                { "Typescript", ExpLevel.Expert },
+                                { "AWS", ExpLevel.Low },
+                                { "SQL", ExpLevel.Low },
+                                { "Mariadb", ExpLevel.Expert }
+                            },
+                            new("", "", "", false, "", 0, "", null)
+                        )
                     ),
                     new(
                         Org.Id,
                         "c",
-                        "c",
+                        "Cat Sanchez",
                         OrgMemberRole.Owner,
-                        new("algeria"),
-                        new(new(), new("", "", "", false, "", 0, "", null))
+                        new("norway"),
+                        new(
+                            new()
+                            {
+                                { "Javascript", ExpLevel.High },
+                                { "Typescript", ExpLevel.Mid },
+                                { "AWS", ExpLevel.Mid },
+                                { "SQL", ExpLevel.Low },
+                                { "Mariadb", ExpLevel.None }
+                            },
+                            new("", "", "", false, "", 0, "", null)
+                        )
                     )
                 }
             );
