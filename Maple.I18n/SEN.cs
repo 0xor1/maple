@@ -13,6 +13,7 @@ public static partial class S
         new()
         {
             { Add, new("Add") },
+            { Body, new("Body") },
             { Cancel, new("Cancel") },
             { Confirm, new("Confirm") },
             { Country, new("Country") },
@@ -26,6 +27,7 @@ public static partial class S
             { ExpLevelLow, new("No Production") },
             { ExpLevelMid, new("Rusty") },
             { ExpLevelNone, new("No Experience") },
+            { GithubUrl, new("Github Url") },
             { Home, new("Home") },
             {
                 HomeBody,
@@ -34,8 +36,10 @@ public static partial class S
                 )
             },
             { HomeHeader, new("Hello, Maple!") },
+            { Image, new("Image") },
             { Invite, new("Invite") },
             { Key, new("Key") },
+            { LinkedInUrl, new("LinkedIn Url") },
             { Loading, new("Loading") },
             { Name, new("Name") },
             { New, new("New") },
@@ -79,6 +83,7 @@ public static partial class S
             { OrgYourCountry, new("Your Country") },
             { OrgYourName, new("Your Name") },
             { ProficiencyLevels, new("Proficiency Levels") },
+            { Profile, new("Profile") },
             { ProfileTemplate, new("Profile Template") },
             { Required, new("Required") },
             { Skills, new("Skills") },
@@ -86,6 +91,7 @@ public static partial class S
                 StringValidation,
                 new("Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}")
             },
+            { Title, new("Title") },
             { Afghanistan, new("Afghanistan") },
             { Albania, new("Albania") },
             { Algeria, new("Algeria") },

@@ -1,43 +1,58 @@
 ﻿@using Common.Shared
 @using Common.Shared.Auth
+@using Maple.Api.Org
 @using Maple.Api.OrgMember
 @using Maple.Client.Lib
+@using Maple.Util
 @using AuthValidator = Common.Client.AuthValidator
 @using CS = Common.Shared.I18n.S
+@using Data = Maple.Api.OrgMember.Data
 @using IApi = Maple.Api.IApi
 @using S = Maple.I18n.S
-<div class="root col ov-v">
-    <RadzenTemplateForm
-        TItem="Model"
-        Data="_model"
-        Submit="Do"
-        class="flx col ai-stretch g-1">
+
+<RadzenTemplateForm
+    TItem="Model"
+    Data="_model"
+    Submit="Do"
+    class="root col p-0h g-1 jc-s ai-s">
+    <RadzenText class="m-0" TextStyle="TextStyle.H2">@(Ctx.OrgMember == null? L.S(S.OrgMemberNewOrgMember): L.S(S.OrgMemberUpdateOrgMember))</RadzenText>
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Component="OrgName" Text="@L.S(S.Name)"/>
+        <RadzenTextBox Name="Name" @bind-Value="@_model.Name"/>
+        <RadzenRequiredValidator Component="Name" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+    </div>
+    @if (Ctx.OrgMember == null)
+    {
         <div class="flx col ai-stretch">
-            <RadzenLabel class="m-b-0q" Component="OrgName" Text="@L.S(S.Name)"/>
-            <RadzenTextBox Name="Name" @bind-Value="@_model.Name"/>
-            <RadzenRequiredValidator Component="Name" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+            <RadzenLabel class="m-b-0q" Component="Email" Text="@L.S(CS.Email)"/>
+            <RadzenTextBox Name="Email" @bind-Value="@_model.Email"/>
+            <CommonCustomValidator Component="Email" Popup="true" Validator="AuthValidator.EmailValidator"/>
         </div>
-        @if (Ctx.OrgMember == null)
-        {
-            <div class="flx col ai-stretch">
-                <RadzenLabel class="m-b-0q" Component="Email" Text="@L.S(CS.Email)"/>
-                <RadzenTextBox Name="Email" @bind-Value="@_model.Email"/>
-                <CommonCustomValidator Component="Email" Popup="true" Validator="AuthValidator.EmailValidator"/>
-            </div>
-        }
-        <div class="flx col ai-stretch">
-            <RadzenLabel class="m-b-0q" Component="Role" Text="@L.S(S.OrgMemberRole)"/>
-            <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
-        </div>
-        <div class="flx g-0h jc-stretch">
-            <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.OrgMember != null? L.S(CS.Update): L.S(S.Invite))"/>
-        </div>
-    </RadzenTemplateForm>
-</div>
+    }
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Component="Role" Text="@L.S(S.OrgMemberRole)"/>
+        <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
+    </div>
+    <div class="flx col ai-stretch">
+        <RadzenLabel class="m-b-0q" Component="Country" Text="@L.S(S.OrgYourCountry)"/>
+        <RadzenDropDown TValue="Key" Data="Countries" ValueProperty="Key" TextProperty="Display" Name="Country" @bind-Value="@_model.Country" AllowClear="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
+        <RadzenRequiredValidator Component="Country" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+    </div>
+    <RadzenText class="m-0" TextStyle="TextStyle.H5">@L.S(S.Profile)</RadzenText>
+    <div class="flx col ai-stretch w-100p">
+        <RadzenLabel class="m-b-0q" Component="Title" Text="@L.S(S.Title)"/>
+        <RadzenTextArea Rows="2" class="w-100p mw-100p" Name="Title" @bind-Value="@_model.ProfileTitle"/>
+        <RadzenRequiredValidator Component="Title" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+    </div>
+    <div class="flx g-0h jc-stretch">
+        <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.OrgMember != null? L.S(CS.Update): L.S(S.Invite))"/>
+    </div>
+</RadzenTemplateForm>
 
 @inject L L;
 @inject UiCtx Ctx;
 @inject IApi Api;
+@inject NavigationManager Nav;
 @code {
 
     [CascadingParameter]
@@ -61,8 +76,20 @@
         public string Email { get; set; } = "";
         public OrgMemberRole Role { get; set; } = OrgMemberRole.Member;
         public Key Country { get; set; } = Util.Country.Afghanistan;
-        public Data Data { get; set; } = new(new (), new ("", "", "", false, "", 0, "", null));
+        public Dictionary<string, ExpLevel> SkillMatrix { get; set; } = new ();
+        public string ProfileTitle { get; set; } = string.Empty;
+        public string ProfileBody { get; set; } = string.Empty;
+        public string ProfileCsvSkills { get; set; } = string.Empty;
+        public bool ProfileHasImage { get; set; } = false;
+        public string ProfileImageType { get; set; } = string.Empty;
+        public ulong ProfileImageSize { get; set; } = 0;
+        public IBrowserFile? ImageFile { get; set; } = null;
+        public string ProfileGithubUrl { get; set; } = string.Empty;
+        public string? ProfileLinkedInUrl { get; set; } = null;
+        
     }
+    
+    private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();
 
     Model _model = new();
     private bool _doing;
@@ -75,7 +102,15 @@
             _model.Name = Ctx.OrgMember.Name;
             _model.Role = Ctx.OrgMember.Role;
             _model.Country = Ctx.OrgMember.Country;
-            _model.Data = Ctx.OrgMember.Data;
+            _model.SkillMatrix = Ctx.OrgMember.Data.SkillMatrix;
+            _model.ProfileTitle = Ctx.OrgMember.Data.Profile.Title;
+            _model.ProfileBody = Ctx.OrgMember.Data.Profile.Body;
+            _model.ProfileCsvSkills = Ctx.OrgMember.Data.Profile.CsvSkills;
+            _model.ProfileHasImage = Ctx.OrgMember.Data.Profile.HasImage;
+            _model.ProfileImageType = Ctx.OrgMember.Data.Profile.ImageType;
+            _model.ProfileImageSize = Ctx.OrgMember.Data.Profile.ImageSize;
+            _model.ProfileGithubUrl = Ctx.OrgMember.Data.Profile.GithubUrl;
+            _model.ProfileLinkedInUrl = Ctx.OrgMember.Data.Profile.LinkedInUrl;
         }
         return Task.CompletedTask;
     }
@@ -86,21 +121,17 @@
         try
         {
             if (Ctx.OrgMember == null)
-            {
-                var mem = await Api.OrgMember.Invite(new(OrgId, _model.Email, _model.Name, _model.Role, _model.Country));
-                if (OnInvited != null)
-                {
-                    await OnInvited(mem);
-                }
+            { 
+                await Api.OrgMember.Invite(new(OrgId, _model.Email, _model.Name, _model.Role, _model.Country));
             }
             else
             {
-                var mem = await Api.OrgMember.Update(new(OrgId, Ctx.OrgMember.Id, _model.Name, _model.Role, _model.Country, _model.Data));
-                if (OnUpdated != null)
-                {
-                    await OnUpdated(mem);
-                }
+                var mem = await Api.OrgMember.Update(new(OrgId, Ctx.OrgMember.Id, _model.Name, _model.Role, _model.Country, new Data(_model.SkillMatrix, new Profile(_model.ProfileTitle, _model.ProfileBody, _model.ProfileCsvSkills, _model.ProfileHasImage, _model.ProfileImageType, _model.ProfileImageSize, _model.ProfileGithubUrl, _model.ProfileLinkedInUrl))));
+                var i = Ctx.OrgMembers.FindIndex(x => x.Id == Ctx.OrgMemberId);
+                Ctx.OrgMembers[i] = mem;
             }
+
+            Nav.NavigateTo($"/org/{Ctx.Org.NotNull().Id}/members");
         }
         catch
         {

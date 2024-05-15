@@ -1,5 +1,6 @@
 key,en
 add,Add
+body,Body
 cancel,Cancel
 confirm,Confirm
 country,Country
@@ -13,11 +14,14 @@ exp_level_high,Highly Proficient
 exp_level_low,No Production
 exp_level_mid,Rusty
 exp_level_none,No Experience
+github_url,Github Url
 home,Home
 home_body,"<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
 home_header,"Hello, Maple!"
+image,Image
 invite,Invite
 key,Key
+linked_in_url,LinkedIn Url
 loading,Loading
 name,Name
 new,New
@@ -52,10 +56,12 @@ org_update_org,Update Org
 org_your_country,Your Country
 org_your_name,Your Name
 proficiency_levels,Proficiency Levels
+profile,Profile
 profile_template,Profile Template
 required,Required
 skills,Skills
 string_validation,"Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}"
+title,Title
 afghanistan,"Afghanistan"
 albania,"Albania"
 algeria,"Algeria"

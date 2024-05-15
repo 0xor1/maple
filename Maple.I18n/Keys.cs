@@ -8,6 +8,7 @@ namespace Maple.I18n;
 public static partial class S
 {
     public const string Add = "add";
+    public const string Body = "body";
     public const string Cancel = "cancel";
     public const string Confirm = "confirm";
     public const string Country = "country";
@@ -21,11 +22,14 @@ public static partial class S
     public const string ExpLevelLow = "exp_level_low";
     public const string ExpLevelMid = "exp_level_mid";
     public const string ExpLevelNone = "exp_level_none";
+    public const string GithubUrl = "github_url";
     public const string Home = "home";
     public const string HomeBody = "home_body";
     public const string HomeHeader = "home_header";
+    public const string Image = "image";
     public const string Invite = "invite";
     public const string Key = "key";
+    public const string LinkedInUrl = "linked_in_url";
     public const string Loading = "loading";
     public const string Name = "name";
     public const string New = "new";
@@ -54,10 +58,12 @@ public static partial class S
     public const string OrgYourCountry = "org_your_country";
     public const string OrgYourName = "org_your_name";
     public const string ProficiencyLevels = "proficiency_levels";
+    public const string Profile = "profile";
     public const string ProfileTemplate = "profile_template";
     public const string Required = "required";
     public const string Skills = "skills";
     public const string StringValidation = "string_validation";
+    public const string Title = "title";
     public const string Afghanistan = "afghanistan";
     public const string Albania = "albania";
     public const string Algeria = "algeria";

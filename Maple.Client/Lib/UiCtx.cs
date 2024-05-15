@@ -10,14 +10,14 @@ public class UiCtx
     private readonly SemaphoreSlim _ss = new(1, 1);
     private readonly IApi _api;
     private readonly IAuthService _auth;
-
     public string? OrgId { get; private set; }
     public string? OrgMemberId { get; private set; }
+    public string? SesId { get; private set; }
     public Org? Org { get; private set; }
 
     public List<OrgMember> OrgMembers { get; private set; } = new();
-    public OrgMember? OrgMember { get; private set; }
-    public OrgMember? SesOrgMember { get; private set; }
+    public OrgMember? OrgMember => OrgMembers.FirstOrDefault(x => x.Id == OrgMemberId);
+    public OrgMember? SesOrgMember => OrgMembers.FirstOrDefault(x => x.Id == SesId);
 
     public bool HasOrgOwnerPerm => SesOrgMember?.Role == OrgMemberRole.Owner;
 
@@ -37,14 +37,12 @@ public class UiCtx
             OrgId = orgId;
             OrgMemberId = orgMemberId;
             var ses = await _auth.GetSession();
-            var sesId = ses.Id;
+            SesId = ses.Id;
 
             if (OrgId == null)
             {
                 Org = null;
                 OrgMembers = new List<OrgMember>();
-                OrgMember = null;
-                SesOrgMember = null;
                 return;
             }
 
@@ -109,8 +107,6 @@ public class UiCtx
                     )
                 }
             );
-            OrgMember = OrgMembers.FirstOrDefault(x => x.Id == orgMemberId);
-            SesOrgMember = OrgMembers.FirstOrDefault(x => x.Id == sesId);
         }
         finally
         {
