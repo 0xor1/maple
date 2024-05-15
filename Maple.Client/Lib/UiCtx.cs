@@ -49,7 +49,36 @@ public class UiCtx
             }
 
             Org = await _api.Org.GetOne(new(OrgId));
-            OrgMembers = (await _api.OrgMember.Get(new(OrgId)));
+            OrgMembers = await _api.OrgMember.Get(new(OrgId));
+            OrgMembers.AddRange(
+                new List<OrgMember>()
+                {
+                    new(
+                        Org.Id,
+                        "a",
+                        "a",
+                        OrgMemberRole.Admin,
+                        new("algeria"),
+                        new(new(), new("", "", "", false, "", 0, "", null))
+                    ),
+                    new(
+                        Org.Id,
+                        "b",
+                        "b",
+                        OrgMemberRole.Member,
+                        new("algeria"),
+                        new(new(), new("", "", "", false, "", 0, "", null))
+                    ),
+                    new(
+                        Org.Id,
+                        "c",
+                        "c",
+                        OrgMemberRole.Owner,
+                        new("algeria"),
+                        new(new(), new("", "", "", false, "", 0, "", null))
+                    )
+                }
+            );
             OrgMember = OrgMembers.FirstOrDefault(x => x.Id == orgMemberId);
             SesOrgMember = OrgMembers.FirstOrDefault(x => x.Id == sesId);
         }

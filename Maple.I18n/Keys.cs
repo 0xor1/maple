@@ -10,6 +10,7 @@ public static partial class S
     public const string Add = "add";
     public const string Cancel = "cancel";
     public const string Confirm = "confirm";
+    public const string Country = "country";
     public const string Create = "create";
     public const string CreatedOn = "created_on";
     public const string Delete = "delete";
@@ -28,6 +29,7 @@ public static partial class S
     public const string Loading = "loading";
     public const string Name = "name";
     public const string New = "new";
+    public const string NotSet = "not_set";
     public const string OnePerLine = "one_per_line";
     public const string OrgConfirmDeleteOrg = "org_confirm_delete_org";
     public const string OrgMemberInviteEmailHtml = "org_member_invite_email_html";

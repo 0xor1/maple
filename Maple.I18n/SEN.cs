@@ -15,6 +15,7 @@ public static partial class S
             { Add, new("Add") },
             { Cancel, new("Cancel") },
             { Confirm, new("Confirm") },
+            { Country, new("Country") },
             { Create, new("Create") },
             { CreatedOn, new("Created On") },
             { Delete, new("Delete") },
@@ -38,6 +39,7 @@ public static partial class S
             { Loading, new("Loading") },
             { Name, new("Name") },
             { New, new("New") },
+            { NotSet, new("Not Set") },
             { OnePerLine, new("One per line") },
             {
                 OrgConfirmDeleteOrg,

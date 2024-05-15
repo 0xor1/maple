@@ -1,10 +1,11 @@
 ﻿@using Common.Shared
+@using Common.Shared.Auth
 @using Ganss.Xss
-@using Maple.Api
 @using Maple.Api.Org
 @using Maple.Client.Lib
 @using Maple.Util
 @using CS = Common.Shared.I18n.S
+@using IApi = Maple.Api.IApi
 @using S = Maple.I18n.S
 <RadzenTemplateForm TItem="Model"
                     Data="_model"
@@ -47,6 +48,9 @@
 @inject UiCtx Ctx;
 @inject NavigationManager Nav;
 @code {
+    
+    [CascadingParameter]
+    public ISession Session { get; set; } = default!;
     
     [Parameter]
     public string? UpdateOrgId { get; set; }

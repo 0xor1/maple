@@ -1,5 +1,6 @@
 ﻿@using Common.Shared
 @using Common.Shared.Auth
+@using Maple.Api.Org
 @using Maple.Api.OrgMember
 @using Maple.Client.Lib
 @using IApi = Maple.Api.IApi
@@ -21,9 +22,9 @@
         AllowFiltering="true"
         AllowPaging="true"
         LoadData="LoadData"
-        KeyProperty="Id" Style="width: 50rem">
+        KeyProperty="Id">
         <Columns>
-            <RadzenDataGridColumn Sortable="true" Width="18em" TItem="OrgMember" Property="@nameof(OrgMember.Name)" Title="@L.S(S.Name)" FilterValue="@NameStartsWith">
+            <RadzenDataGridColumn Sortable="true" Width="7em" TItem="OrgMember" Property="@nameof(OrgMember.Name)" Title="@L.S(S.Name)" FilterValue="@NameStartsWith">
                 <Template Context="m">
                     <div class="flx child-no-shrink jc-s ai-c g-0h w-100 mw-100 p-rel">
                         <span class="shrink-1 ellip">@m.Name</span>
@@ -39,14 +40,33 @@
                     <RadzenTextBox @bind-Value="@NameStartsWith" Style="width:100%"/>
                 </FilterTemplate>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn Sortable="true" TextAlign="TextAlign.Center" Width="10em" TItem="OrgMember" Property="@nameof(OrgMember.Role)" Title="@L.S(S.OrgMemberRole)" FilterValue="@Role">
+            <RadzenDataGridColumn Width="4em" Sortable="true" TextAlign="TextAlign.Center" TItem="OrgMember" Property="@nameof(OrgMember.Role)" Title="@L.S(S.OrgMemberRole)" FilterValue="@Role">
                 <Template Context="m">
                     @RoleString(m.Role, L)
                 </Template>
                 <FilterTemplate>
-                    <RadzenDropDown Style="width: 100%" Name="Role" @bind-Value="@Role" TValue="OrgMemberRole?" ValueProperty="Role" TextProperty="Display" AllowClear="true" Data="Roles(L, null)"/>
+                    <RadzenDropDown Style="width: 100%" Name="Role" @bind-Value="@Role" TValue="OrgMemberRole?" ValueProperty="Role" TextProperty="Display" AllowClear="true" Data="Roles(L)"/>
                 </FilterTemplate>
             </RadzenDataGridColumn>
+            <RadzenDataGridColumn Width="4em" Sortable="false" TextAlign="TextAlign.Center" TItem="OrgMember" Property="@nameof(OrgMember.Country)" Title="@L.S(S.Country)" FilterValue="@Country">
+                <Template Context="m">
+                    @L.S(m.Country.Value)
+                </Template>
+                <FilterTemplate>
+                    <RadzenDropDown Style="width: 100%" TValue="string" Data="@Countries" ValueProperty="Key" TextProperty="Value" Name="OwnerCountry" @bind-Value="@Country" AllowClear="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
+                </FilterTemplate>
+            </RadzenDataGridColumn>
+            @foreach (var col in _skillCols)
+            {
+                <RadzenDataGridColumn Width="4em" Sortable="false" TextAlign="TextAlign.Center" TItem="OrgMember" Property="@col.Name" Title="@col.Name" FilterValue="@col.Filter">
+                    <Template Context="m">
+                        @ExpLevelString(m.Data.SkillMatrix.Try(col.Name).Val, L)
+                    </Template>
+                    <FilterTemplate>
+                        <RadzenDropDown Style="width: 100%" Name="@col.Name" @bind-Value="@col.Filter" TValue="ExpLevel?" ValueProperty="ExpLevel" TextProperty="Display" AllowClear="true" Data="ExpLevels(L)"/>
+                    </FilterTemplate>
+                </RadzenDataGridColumn>
+            }
         </Columns>
     </RadzenDataGrid>
 </div>
@@ -63,22 +83,32 @@
     [Parameter]
     [EditorRequired]
     public string OrgId { get; set; } = "";
+    
+    private List<KeyValuePair<string,string>> Countries => Util.Country.Enum.Select(c => new KeyValuePair<string,string>(c.Value, L.S(c.Value))).ToList();
 
     private bool? IsActive { get; set; } = true;
     private string? NameStartsWith { get; set; }
     private OrgMemberRole? Role { get; set; }
+    private string? Country { get; set; }
     private int Count => Items.Count; 
     private List<OrgMember> Items { get; set; } = new ();
     private bool _isLoading = false;
     private RadzenDataGrid<OrgMember> _grid;
-    
+    private List<SkillCol> _skillCols;
+
+    private class SkillCol
+    {
+        public string Name { get; set; }
+        public ExpLevel? Filter  { get; set; }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         _isLoading = true;
         try
         {
-            var res = await Api.OrgMember.Get(new(OrgId));
-            Items = Ctx.OrgMembers;
+            await LoadData(new());
+            _skillCols = Ctx.Org.NotNull().Data.Skills.Select(x => new SkillCol() { Name = x}).ToList();
         }
         finally
         {
@@ -96,7 +126,7 @@
         {
             var orderBy = OrgMemberOrderBy.Role;
             var asc = true;
-            if (arg.Sorts.Count() == 1)
+            if (arg.Sorts?.Count() == 1)
             {
                 var sort = arg.Sorts.Single();
                 orderBy = sort.Property switch
@@ -115,8 +145,27 @@
             {
                 NameStartsWith = null;
             }
-            var res = await Api.OrgMember.Get(new(OrgId));
-            Items = res;
+
+            var qry = Ctx.OrgMembers.AsEnumerable();
+            if (NameStartsWith != null)
+            {
+                qry = qry.Where(x => x.Name.StartsWith(NameStartsWith, StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            if (Country != null)
+            {
+                qry = qry.Where(x => x.Country.Value == Country);
+            }
+
+            qry = (orderBy, asc) switch
+            {
+                (OrgMemberOrderBy.Name, true) => qry.OrderBy(x => x.Name.ToLower()),
+                (OrgMemberOrderBy.Role, true) => qry.OrderBy(x => x.Role).ThenBy(x => x.Name.ToLower()),
+                (OrgMemberOrderBy.Name, false) => qry.OrderByDescending(x => x.Name.ToLower()),
+                (OrgMemberOrderBy.Role, false) => qry.OrderByDescending(x => x.Role).ThenBy(x => x.Name.ToLower())
+            };
+
+            Items = qry.ToList();
         }
         finally
         {
@@ -134,6 +183,14 @@
         res.RemoveAll(x => x.Role < (ctx?.OrgMember?.Role ?? OrgMemberRole.Owner));
         return res;
     }
+    
+    
+    
+    public static List<ExpLevelOpt> ExpLevels(L l, UiCtx? ctx = null)
+    {
+        var res = new List<ExpLevelOpt>() { new(ExpLevel.None, l), new(ExpLevel.Low, l), new(ExpLevel.Mid, l), new(ExpLevel.High, l), new(ExpLevel.Expert, l) };
+        return res;
+    }
 
     public record RoleOpt
     {
@@ -147,11 +204,33 @@
         }
     };
 
+    public record ExpLevelOpt
+    {
+        public ExpLevel? ExpLevel { get; init; }
+        public string Display { get; init; }
+
+        public ExpLevelOpt(ExpLevel? expLevel, L l)
+        {
+            ExpLevel = expLevel;
+            Display = ExpLevelString(expLevel, l);
+        }
+    };
+
     public static string RoleString(OrgMemberRole r, L L)
         => r switch{
             OrgMemberRole.Owner => L.S(S.OrgMemberRoleOwner),
             OrgMemberRole.Admin => L.S(S.OrgMemberRoleAdmin),
             OrgMemberRole.Member => L.S(S.OrgMemberRoleMember),
+            _ => throw new ArgumentOutOfRangeException()};
+
+    public static string ExpLevelString(ExpLevel? l, L L)
+        => l switch{
+            null => L.S(S.NotSet),
+            ExpLevel.None => L.S(S.ExpLevelNone),
+            ExpLevel.Low => L.S(S.ExpLevelLow),
+            ExpLevel.Mid => L.S(S.ExpLevelMid),
+            ExpLevel.High => L.S(S.ExpLevelHigh),
+            ExpLevel.Expert => L.S(S.ExpLevelExpert),
             _ => throw new ArgumentOutOfRangeException()};
 
 }

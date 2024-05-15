@@ -40,6 +40,9 @@
 @inject IApi Api;
 @code {
 
+    [CascadingParameter]
+    public ISession Session { get; set; } = default!;
+    
     [Parameter]
     public string OrgId { get; set; }
 
