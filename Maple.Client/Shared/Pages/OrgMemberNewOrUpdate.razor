@@ -29,21 +29,37 @@
             <CommonCustomValidator Component="Email" Popup="true" Validator="AuthValidator.EmailValidator"/>
         </div>
     }
-    <div class="flx col ai-stretch">
-        <RadzenLabel class="m-b-0q" Component="Role" Text="@L.S(S.OrgMemberRole)"/>
-        <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
-    </div>
-    <div class="flx col ai-stretch">
-        <RadzenLabel class="m-b-0q" Component="Country" Text="@L.S(S.OrgYourCountry)"/>
-        <RadzenDropDown TValue="Key" Data="Countries" ValueProperty="Key" TextProperty="Display" Name="Country" @bind-Value="@_model.Country" AllowClear="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
-        <RadzenRequiredValidator Component="Country" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
-    </div>
-    <RadzenText class="m-0" TextStyle="TextStyle.H5">@L.S(S.Profile)</RadzenText>
-    <div class="flx col ai-stretch w-100p">
-        <RadzenLabel class="m-b-0q" Component="Title" Text="@L.S(S.Title)"/>
-        <RadzenTextArea Rows="2" class="w-100p mw-100p" Name="Title" @bind-Value="@_model.ProfileTitle"/>
-        <RadzenRequiredValidator Component="Title" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
-    </div>
+    else
+    {
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="Role" Text="@L.S(S.OrgMemberRole)"/>
+            <RadzenDropDown Name="Role" @bind-Value="@_model.Role" TValue="OrgMemberRole" ValueProperty="Role" TextProperty="Display" Data="OrgMembers.Roles(L, Ctx)"/>
+        </div>
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="Country" Text="@L.S(S.OrgYourCountry)"/>
+            <RadzenDropDown TValue="Key" Data="Countries" ValueProperty="Key" TextProperty="Display" Name="Country" @bind-Value="@_model.Country" AllowClear="false" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"/>
+            <RadzenRequiredValidator Component="Country" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <RadzenText class="m-0" TextStyle="TextStyle.H5">@L.S(S.Profile)</RadzenText>
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="Image" Text="@L.S(S.Image)"/>
+            <div class="rz-fileupload m-b-0q">
+                <div class="rz-fileupload-buttonbar">
+                    <span class="rz-fileupload-choose rz-button">
+                        <InputFile OnChange="OnFileChanged" multiple accept="image/png, image/jpeg"/>
+                        <span class="rz-button-text">@L.S(S.Choose)</span>
+                    </span>
+                </div>
+            </div>
+            <RadzenImage Path="@ImageUrl" class="w-5 h-5 rz-gravatar" Style="object-fit: cover"/>
+            <RadzenRequiredValidator Component="Country" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch w-100p">
+            <RadzenLabel class="m-b-0q" Component="Title" Text="@L.S(S.Title)"/>
+            <RadzenTextArea Rows="2" class="w-100p mw-100p" Name="Title" @bind-Value="@_model.ProfileTitle"/>
+            <RadzenRequiredValidator Component="Title" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+    }
     <div class="flx g-0h jc-stretch">
         <RadzenButton ButtonType="ButtonType.Submit" IsBusy="_doing" Text="@(Ctx.OrgMember != null? L.S(CS.Update): L.S(S.Invite))"/>
     </div>
@@ -64,14 +80,11 @@
     [Parameter]
     public string? UpdateMemberId { get; set; }
 
-    [Parameter]
-    public Func<OrgMember, Task>? OnUpdated { get; set; } 
-
-    [Parameter]
-    public Func<OrgMember, Task>? OnInvited { get; set; }
+    private string? ImageUrl { get; set; }
 
     public class Model
     {
+        public string Id { get; set; } = "";
         public string Name { get; set; } = "";
         public string Email { get; set; } = "";
         public OrgMemberRole Role { get; set; } = OrgMemberRole.Member;
@@ -83,7 +96,6 @@
         public bool ProfileHasImage { get; set; } = false;
         public string ProfileImageType { get; set; } = string.Empty;
         public ulong ProfileImageSize { get; set; } = 0;
-        public IBrowserFile? ImageFile { get; set; } = null;
         public string ProfileGithubUrl { get; set; } = string.Empty;
         public string? ProfileLinkedInUrl { get; set; } = null;
         
@@ -99,6 +111,7 @@
         
         if (Ctx.OrgMember != null)
         {
+            _model.Id = Ctx.OrgMember.Id;
             _model.Name = Ctx.OrgMember.Name;
             _model.Role = Ctx.OrgMember.Role;
             _model.Country = Ctx.OrgMember.Country;
@@ -111,6 +124,7 @@
             _model.ProfileImageSize = Ctx.OrgMember.Data.Profile.ImageSize;
             _model.ProfileGithubUrl = Ctx.OrgMember.Data.Profile.GithubUrl;
             _model.ProfileLinkedInUrl = Ctx.OrgMember.Data.Profile.LinkedInUrl;
+            ImageUrl = _model.ProfileHasImage ? Api.OrgMember.DownloadImageUrl(new(OrgId, _model.Id, false)) : "/wolf.png";
         }
         return Task.CompletedTask;
     }
@@ -139,6 +153,24 @@
             // call StatHasChanged on errors
         }
         _doing = false;
+    }
+
+    private async Task OnFileChanged(InputFileChangeEventArgs arg)
+    {
+        if (arg.File != null)
+        {
+            var mem = await Api.OrgMember.UploadImage(new (OrgId, _model.Id)
+            {
+                Stream = new RpcStream(arg.File.OpenReadStream(), arg.File.Name, arg.File.ContentType, false, (ulong)arg.File.Size)
+            });
+            var i = Ctx.OrgMembers.FindIndex(x => x.Id == Ctx.OrgMemberId);
+            Ctx.OrgMembers[i] = mem;
+            _model.ProfileHasImage = mem.Data.Profile.HasImage;
+            _model.ProfileImageSize = mem.Data.Profile.ImageSize;
+            _model.ProfileImageType = mem.Data.Profile.ImageType;
+            ImageUrl = $"{Api.OrgMember.DownloadImageUrl(new(OrgId, _model.Id, false))}&t={DateTimeExt.UtcNowMilli():yyyyMMddhhmmss}";
+            StateHasChanged();
+        }
     }
 
 }

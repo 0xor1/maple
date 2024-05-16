@@ -9,7 +9,7 @@ public interface IOrgMemberApi
     public Task<OrgMember> Update(Update arg, CancellationToken ctkn = default);
     public Task<OrgMember> UploadImage(UploadImage arg, CancellationToken ctkn = default);
     public Task<HasStream> DownloadImage(DownloadImage arg, CancellationToken ctkn = default);
-    public string DownloadUrl(DownloadImage arg);
+    public string DownloadImageUrl(DownloadImage arg);
     public Task Delete(Exact arg, CancellationToken ctkn = default);
 }
 
@@ -37,7 +37,7 @@ public class OrgMemberApi : IOrgMemberApi
     public Task<HasStream> DownloadImage(DownloadImage arg, CancellationToken ctkn = default) =>
         _client.Do(OrgMemberRpcs.DownloadImage, arg, ctkn);
 
-    public string DownloadUrl(DownloadImage arg) =>
+    public string DownloadImageUrl(DownloadImage arg) =>
         _client.GetUrl(OrgMemberRpcs.DownloadImage, arg);
 
     public Task Delete(Exact arg, CancellationToken ctkn = default) =>

@@ -15,6 +15,7 @@ public static partial class S
             { Add, new("Add") },
             { Body, new("Body") },
             { Cancel, new("Cancel") },
+            { Choose, new("Choose") },
             { Confirm, new("Confirm") },
             { Country, new("Country") },
             { Create, new("Create") },

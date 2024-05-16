@@ -10,6 +10,7 @@ public static partial class S
     public const string Add = "add";
     public const string Body = "body";
     public const string Cancel = "cancel";
+    public const string Choose = "choose";
     public const string Confirm = "confirm";
     public const string Country = "country";
     public const string Create = "create";
