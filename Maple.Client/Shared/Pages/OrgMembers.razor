@@ -110,7 +110,7 @@
         _isLoading = true;
         try
         {
-            await LoadData(new());
+            await LoadData(null);
             _skillCols = Ctx.Org.NotNull().Data.Skills.Select(x => new SkillCol() { Name = x}).ToList();
         }
         finally
@@ -122,14 +122,19 @@
     private async Task GoToNew()
         => Nav.NavigateTo($"/org/{OrgId}/member_new");
 
-    private async Task LoadData(LoadDataArgs arg)
+    private async Task LoadData(LoadDataArgs? arg)
     {
+        if (arg == null && Items.Any())
+        {
+            return;
+        }
         _isLoading = true;
         try
         {
+            var qry = Ctx.OrgMembers.AsEnumerable();
             var orderBy = OrgMemberOrderBy.Role;
             var asc = true;
-            if (arg.Sorts?.Count() == 1)
+            if (arg?.Sorts?.Count() == 1)
             {
                 var sort = arg.Sorts.Single();
                 orderBy = sort.Property switch
@@ -149,7 +154,6 @@
                 NameStartsWith = null;
             }
 
-            var qry = Ctx.OrgMembers.AsEnumerable();
             if (NameStartsWith != null)
             {
                 qry = qry.Where(x => x.Name.StartsWith(NameStartsWith, StringComparison.InvariantCultureIgnoreCase));
@@ -160,6 +164,18 @@
                 qry = qry.Where(x => x.Country.Value == Country);
             }
 
+            if (arg != null)
+            {
+                foreach (var f in arg.Filters.Empty().Where(x => x.FilterValue is ExpLevel))
+                {
+                    qry = qry.Where(x =>
+                    {
+                        var maybe = x.Data.SkillMatrix.Try(f.Property);
+                        return maybe.Got && maybe.Val >= (f.FilterValue as ExpLevel?).NotNull();
+                    });
+                }
+            }
+
             qry = (orderBy, asc) switch
             {
                 (OrgMemberOrderBy.Name, true) => qry.OrderBy(x => x.Name.ToLower()),
@@ -167,15 +183,6 @@
                 (OrgMemberOrderBy.Name, false) => qry.OrderByDescending(x => x.Name.ToLower()),
                 (OrgMemberOrderBy.Role, false) => qry.OrderByDescending(x => x.Role).ThenBy(x => x.Name.ToLower())
             };
-
-            foreach (var f in arg.Filters.Empty().Where(x => x.FilterValue is ExpLevel))
-            {
-                qry = qry.Where(x =>
-                {
-                    var maybe = x.Data.SkillMatrix.Try(f.Property);
-                    return maybe.Got && maybe.Val >= (f.FilterValue as ExpLevel?).NotNull();
-                });
-            }
 
             Items = qry.ToList();
         }
