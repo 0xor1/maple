@@ -43,6 +43,7 @@
         <RadzenText class="m-0" TextStyle="TextStyle.H5">@L.S(S.Profile)</RadzenText>
         <div class="flx col ai-stretch">
             <RadzenLabel class="m-b-0q" Component="Image" Text="@L.S(S.Image)"/>
+            <RadzenText class="m-0" TextStyle="TextStyle.Subtitle2" Text="@L.S(S.ImageFileMaxSize)"/>
             <div class="rz-fileupload m-b-0q">
                 <div class="rz-fileupload-buttonbar">
                     <span class="rz-fileupload-choose rz-button">
@@ -58,6 +59,54 @@
             <RadzenLabel class="m-b-0q" Component="Title" Text="@L.S(S.Title)"/>
             <RadzenTextArea Rows="2" class="w-100p mw-100p" Name="Title" @bind-Value="@_model.ProfileTitle"/>
             <RadzenRequiredValidator Component="Title" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch w-100p">
+            <RadzenLabel class="m-b-0q" Component="Body" Text="@L.S(S.Body)"/>
+            <RadzenTextArea Rows="4" class="w-100p mw-100p" Name="Body" @bind-Value="@_model.ProfileBody"/>
+            <RadzenRequiredValidator Component="Body" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch w-100p">
+            <RadzenLabel class="m-b-0q" Component="Skills" Text="@L.S(S.Skills)"/>
+            <RadzenText class="m-0" TextStyle="TextStyle.Subtitle2" Text="@L.S(S.CsvSkills)"/>
+            <RadzenTextArea Rows="1" class="w-100p mw-100p" Name="Skills" @bind-Value="@_model.ProfileCsvSkills"/>
+            <RadzenRequiredValidator Component="Skills" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="GithubUrl" Text="@L.S(S.GithubUrl)"/>
+            <RadzenTextBox Name="GithubUrl" @bind-Value="@_model.ProfileGithubUrl"/>
+            <RadzenRequiredValidator Component="GithubUrl" Popup="true" Text="@L.S(S.Required)"></RadzenRequiredValidator>
+        </div>
+        <div class="flx col ai-stretch">
+            <RadzenLabel class="m-b-0q" Component="LinkedInUrl" Text="@L.S(S.LinkedInUrl)"/>
+            <RadzenTextBox Name="LinkedInUrl" @bind-Value="@_model.ProfileLinkedInUrl"/>
+        </div>
+        <RadzenText class="m-0" TextStyle="TextStyle.H5">@L.S(S.Skills)</RadzenText>
+        <div class="flx col">
+            <RadzenDataGrid
+                Count="Count"
+                Data="Skills"
+                TItem="KeyVal"
+                IsLoading="_isLoading"
+                EmptyText="@L.S(S.OrgNoSkills)"
+                AllowColumnPicking="false"
+                AllowSorting="false"
+                AllowFiltering="false"
+                KeyProperty="Key"
+                LoadData="LoadData"
+                Style="min-width: 30em; max-width: 40em">
+                <Columns>
+                    <RadzenDataGridColumn Width="5em" TItem="KeyVal" Property="Key" Title="@L.S(S.Skill)">
+                        <Template Context="i">
+                            @i.Key
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn Width="5em" TItem="KeyVal" Property="Val" Title="@L.S(S.ProficiencyLevels)">
+                        <Template Context="i">
+                            <RadzenDropDown Style="width: 100%" Name="ExpLevel" @bind-Value="@i.Val" TValue="ExpLevel?" ValueProperty="ExpLevel" TextProperty="Display" Data="OrgMembers.ExpLevels(L)"/>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         </div>
     }
     <div class="flx g-0h jc-stretch">
@@ -82,6 +131,16 @@
 
     private string? ImageUrl { get; set; }
 
+    private bool _isLoading = false;
+    private int Count => Skills.Count;
+    private List<KeyVal> Skills { get; set; } = new();
+
+    public class KeyVal
+    {
+        public string Key { get; set; }
+        public ExpLevel? Val { get; set; }
+    }
+    
     public class Model
     {
         public string Id { get; set; } = "";
@@ -89,7 +148,6 @@
         public string Email { get; set; } = "";
         public OrgMemberRole Role { get; set; } = OrgMemberRole.Member;
         public Key Country { get; set; } = Util.Country.Afghanistan;
-        public Dictionary<string, ExpLevel> SkillMatrix { get; set; } = new ();
         public string ProfileTitle { get; set; } = string.Empty;
         public string ProfileBody { get; set; } = string.Empty;
         public string ProfileCsvSkills { get; set; } = string.Empty;
@@ -115,7 +173,6 @@
             _model.Name = Ctx.OrgMember.Name;
             _model.Role = Ctx.OrgMember.Role;
             _model.Country = Ctx.OrgMember.Country;
-            _model.SkillMatrix = Ctx.OrgMember.Data.SkillMatrix;
             _model.ProfileTitle = Ctx.OrgMember.Data.Profile.Title;
             _model.ProfileBody = Ctx.OrgMember.Data.Profile.Body;
             _model.ProfileCsvSkills = Ctx.OrgMember.Data.Profile.CsvSkills;
@@ -126,6 +183,8 @@
             _model.ProfileLinkedInUrl = Ctx.OrgMember.Data.Profile.LinkedInUrl;
             ImageUrl = _model.ProfileHasImage ? Api.OrgMember.DownloadImageUrl(new(OrgId, _model.Id, false)) : "/wolf.png";
         }
+        Skills = Ctx.Org.NotNull().Data.Skills.Select(x => new KeyVal{ Key = x, Val = Ctx.OrgMember?.Data.SkillMatrix.Try(x).Val}).ToList();
+
         return Task.CompletedTask;
     }
     
@@ -140,7 +199,7 @@
             }
             else
             {
-                var mem = await Api.OrgMember.Update(new(OrgId, Ctx.OrgMember.Id, _model.Name, _model.Role, _model.Country, new Data(_model.SkillMatrix, new Profile(_model.ProfileTitle, _model.ProfileBody, _model.ProfileCsvSkills, _model.ProfileHasImage, _model.ProfileImageType, _model.ProfileImageSize, _model.ProfileGithubUrl, _model.ProfileLinkedInUrl))));
+                var mem = await Api.OrgMember.Update(new(OrgId, Ctx.OrgMember.Id, _model.Name, _model.Role, _model.Country, new Data(Skills.Where(x => x.Val != null).ToDictionary(x => x.Key, x => x.Val.NotNull()), new Profile(_model.ProfileTitle, _model.ProfileBody, _model.ProfileCsvSkills, _model.ProfileHasImage, _model.ProfileImageType, _model.ProfileImageSize, _model.ProfileGithubUrl, _model.ProfileLinkedInUrl))));
                 var i = Ctx.OrgMembers.FindIndex(x => x.Id == Ctx.OrgMemberId);
                 Ctx.OrgMembers[i] = mem;
             }
@@ -171,6 +230,13 @@
             ImageUrl = $"{Api.OrgMember.DownloadImageUrl(new(OrgId, _model.Id, false))}&t={DateTimeExt.UtcNowMilli():yyyyMMddhhmmss}";
             StateHasChanged();
         }
+    }
+
+    private async Task LoadData()
+    {
+        _isLoading = true;
+        _isLoading = false;
+        await Task.CompletedTask;
     }
 
 }

@@ -15,9 +15,11 @@ public static partial class S
     public const string Country = "country";
     public const string Create = "create";
     public const string CreatedOn = "created_on";
+    public const string CsvSkills = "csv_skills";
     public const string Delete = "delete";
     public const string Display = "display";
     public const string Edit = "edit";
+    public const string ExpLevel = "exp_level";
     public const string ExpLevelExpert = "exp_level_expert";
     public const string ExpLevelHigh = "exp_level_high";
     public const string ExpLevelLow = "exp_level_low";
@@ -28,6 +30,7 @@ public static partial class S
     public const string HomeBody = "home_body";
     public const string HomeHeader = "home_header";
     public const string Image = "image";
+    public const string ImageFileMaxSize = "image_file_max_size";
     public const string Invite = "invite";
     public const string Key = "key";
     public const string LinkedInUrl = "linked_in_url";
@@ -53,6 +56,7 @@ public static partial class S
     public const string OrgNewOrg = "org_new_org";
     public const string OrgNoMembers = "org_no_members";
     public const string OrgNoOrgs = "org_no_orgs";
+    public const string OrgNoSkills = "org_no_skills";
     public const string OrgTooMany = "org_too_many";
     public const string OrgUpdateMember = "org_update_member";
     public const string OrgUpdateOrg = "org_update_org";
@@ -62,6 +66,7 @@ public static partial class S
     public const string Profile = "profile";
     public const string ProfileTemplate = "profile_template";
     public const string Required = "required";
+    public const string Skill = "skill";
     public const string Skills = "skills";
     public const string StringValidation = "string_validation";
     public const string Title = "title";

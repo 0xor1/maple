@@ -7,9 +7,11 @@ confirm,Confirm
 country,Country
 create,Create
 created_on,Created On
+csv_skills,"Separate skills with a comma"
 delete,Delete
 display,Display
 edit,Edit
+exp_level,Experience Level
 exp_level_expert,Teacher
 exp_level_high,Highly Proficient
 exp_level_low,No Production
@@ -20,6 +22,7 @@ home,Home
 home_body,"<p>Welcome to Maple.</p><p>Maple is a HR management tool, it tracks skills proficiencies and individual profiles</p>"
 home_header,"Hello, Maple!"
 image,Image
+image_file_max_size,"File max size 10MB"
 invite,Invite
 key,Key
 linked_in_url,LinkedIn Url
@@ -51,6 +54,7 @@ org_new_member,New Member
 org_new_org,New Org
 org_no_members,No Members
 org_no_orgs,No Orgs
+org_no_skills,No Skills
 org_too_many,You are already a member of too many Orgs
 org_update_member,Update Member
 org_update_org,Update Org
@@ -60,6 +64,7 @@ proficiency_levels,Proficiency Levels
 profile,Profile
 profile_template,Profile Template
 required,Required
+skill,Skill
 skills,Skills
 string_validation,"Invalid string {{Name}}, Min {{Min}}, Max {{Max}}, Regexes {{Regexes}}"
 title,Title
