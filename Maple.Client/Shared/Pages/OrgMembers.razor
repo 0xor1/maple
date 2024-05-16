@@ -27,7 +27,7 @@
         LoadData="LoadData"
         KeyProperty="Id">
         <Columns>
-            <RadzenDataGridColumn Sortable="true" Width="7em" TItem="OrgMember" Property="@nameof(OrgMember.Name)" Title="@L.S(S.Name)" FilterValue="@NameStartsWith">
+            <RadzenDataGridColumn Sortable="true" Width="17em" TItem="OrgMember" Property="@nameof(OrgMember.Name)" Title="@L.S(S.Name)" FilterValue="@NameStartsWith">
                 <Template Context="m">
                     <div class="flx child-no-shrink jc-s ai-c g-0h w-100p mw-100p p-rel">
                         <span class="shrink-1 ellip">@m.Name</span>
@@ -43,7 +43,7 @@
                     <RadzenTextBox @bind-Value="@NameStartsWith" Style="width:100%"/>
                 </FilterTemplate>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn Width="4em" Sortable="true" TItem="OrgMember" Property="@nameof(OrgMember.Role)" Title="@L.S(S.OrgMemberRole)" FilterValue="@Role">
+            <RadzenDataGridColumn Width="10em" Sortable="true" TItem="OrgMember" Property="@nameof(OrgMember.Role)" Title="@L.S(S.OrgMemberRole)" FilterValue="@Role">
                 <Template Context="m">
                     @RoleString(m.Role, L)
                 </Template>
@@ -51,7 +51,7 @@
                     <RadzenDropDown Style="width: 100%" Name="Role" @bind-Value="@Role" TValue="OrgMemberRole?" ValueProperty="Role" TextProperty="Display" AllowClear="true" Data="Roles(L)"/>
                 </FilterTemplate>
             </RadzenDataGridColumn>
-            <RadzenDataGridColumn Width="4em" Sortable="false" TItem="OrgMember" Property="@nameof(OrgMember.Country)" Title="@L.S(S.Country)" FilterValue="@Country">
+            <RadzenDataGridColumn Width="10em" Sortable="false" TItem="OrgMember" Property="@nameof(OrgMember.Country)" Title="@L.S(S.Country)" FilterValue="@Country">
                 <Template Context="m">
                     @L.S(m.Country.Value)
                 </Template>
@@ -61,7 +61,7 @@
             </RadzenDataGridColumn>
             @foreach (var col in _skillCols)
             {
-                <RadzenDataGridColumn Width="4em" Sortable="false" TItem="OrgMember" Property="@col.Name" Title="@col.Name" FilterValue="@col.Filter">
+                <RadzenDataGridColumn Width="10em" Sortable="false" TItem="OrgMember" Property="@col.Name" Title="@col.Name" FilterValue="@col.Filter">
                     <Template Context="m">
                         @ExpLevelString(m.Data.SkillMatrix.Try(col.Name).Val, L)
                     </Template>

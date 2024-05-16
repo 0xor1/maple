@@ -93,14 +93,14 @@
                 AllowFiltering="false"
                 KeyProperty="Key"
                 LoadData="LoadData"
-                Style="min-width: 30em; max-width: 40em">
+                Style="min-width: 25em; max-width: 30em">
                 <Columns>
-                    <RadzenDataGridColumn Width="5em" TItem="KeyVal" Property="Key" Title="@L.S(S.Skill)">
+                    <RadzenDataGridColumn Width="10em" TItem="KeyVal" Property="Key" Title="@L.S(S.Skill)">
                         <Template Context="i">
                             @i.Key
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn Width="5em" TItem="KeyVal" Property="Val" Title="@L.S(S.ProficiencyLevels)">
+                    <RadzenDataGridColumn Width="10em" TItem="KeyVal" Property="Val" Title="@L.S(S.ProficiencyLevels)">
                         <Template Context="i">
                             <RadzenDropDown Style="width: 100%" Name="ExpLevel" @bind-Value="@i.Val" TValue="ExpLevel?" ValueProperty="ExpLevel" TextProperty="Display" Data="OrgMembers.ExpLevels(L)"/>
                         </Template>
