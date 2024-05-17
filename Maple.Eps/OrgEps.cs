@@ -49,15 +49,13 @@ public static class OrgEps
     {
         var activeOrgs = await db.OrgMembers.CountAsync(x => x.Id == ses.Id, ctx.Ctkn);
         ctx.ErrorIf(activeOrgs > MaxActiveOrgs, S.OrgTooMany, null, HttpStatusCode.BadRequest);
-        // TODO html should be sanitized to stop xss attacks but there is a bug that is stripping out css property white-space
-        // which Im currently using to demo the app, so this needs putting back in if this app is ever going to be actually used
-        // arg = arg with
-        // {
-        //     Data = arg.Data with
-        //     {
-        //         ProfileTemplate = ctx.Get<IHtmlSanitizer>().Sanitize(arg.Data.ProfileTemplate)
-        //     }
-        // };
+        arg = arg with
+        {
+            Data = arg.Data with
+            {
+                ProfileTemplate = ctx.Get<IHtmlSanitizer>().Sanitize(arg.Data.ProfileTemplate)
+            }
+        };
         var newOrg = new Db.Org()
         {
             Id = Id.New(),
@@ -118,15 +116,13 @@ public static class OrgEps
         );
         ctx.InsufficientPermissionsIf(m?.Role != OrgMemberRole.Owner);
         var org = await db.Orgs.SingleAsync(x => x.Id == arg.Id, ctx.Ctkn);
-        // TODO html should be sanitized to stop xss attacks but there is a bug that is stripping out css property white-space
-        // which Im currently using to demo the app, so this needs putting back in if this app is ever going to be actually used
-        // arg = arg with
-        // {
-        //     Data = arg.Data with
-        //     {
-        //         ProfileTemplate = ctx.Get<IHtmlSanitizer>().Sanitize(arg.Data.ProfileTemplate)
-        //     }
-        // };
+        arg = arg with
+        {
+            Data = arg.Data with
+            {
+                ProfileTemplate = ctx.Get<IHtmlSanitizer>().Sanitize(arg.Data.ProfileTemplate)
+            }
+        };
         org.Name = arg.Name;
         org.Data = Json.From(arg.Data);
         // TODO should work out if any of the data was changed and remove any deleted values from the org members data

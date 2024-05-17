@@ -69,7 +69,7 @@
         public string RawProfileTemplate
         {
             get => Data.ProfileTemplate;
-            set => Data = Data with { ProfileTemplate = value /* TODO put this back in _sanitizer.Sanitize(value) */ };
+            set => Data = Data with { ProfileTemplate = _sanitizer.Sanitize(value) };
             
         }
 
