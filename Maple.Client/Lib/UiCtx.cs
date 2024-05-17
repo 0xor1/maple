@@ -52,65 +52,6 @@ public class UiCtx
 
             Org = await _api.Org.GetOne(new(OrgId));
             OrgMembers = await _api.OrgMember.Get(new(OrgId));
-            OrgMembers.AddRange(
-                new List<OrgMember>()
-                {
-                    new(
-                        Org.Id,
-                        "a",
-                        "Andrew Price",
-                        OrgMemberRole.Admin,
-                        new("algeria"),
-                        new(
-                            new()
-                            {
-                                { "Javascript", ExpLevel.None },
-                                { "Typescript", ExpLevel.Low },
-                                { "AWS", ExpLevel.Mid },
-                                { "SQL", ExpLevel.High },
-                                { "Mariadb", ExpLevel.Expert }
-                            },
-                            new("", "", "", false, "", 0, "", null)
-                        )
-                    ),
-                    new(
-                        Org.Id,
-                        "b",
-                        "Benjamin Button",
-                        OrgMemberRole.Member,
-                        new("italy"),
-                        new(
-                            new()
-                            {
-                                { "Javascript", ExpLevel.Expert },
-                                { "Typescript", ExpLevel.Expert },
-                                { "AWS", ExpLevel.Low },
-                                { "SQL", ExpLevel.Low },
-                                { "Mariadb", ExpLevel.Expert }
-                            },
-                            new("", "", "", false, "", 0, "", null)
-                        )
-                    ),
-                    new(
-                        Org.Id,
-                        "c",
-                        "Cat Sanchez",
-                        OrgMemberRole.Owner,
-                        new("norway"),
-                        new(
-                            new()
-                            {
-                                { "Javascript", ExpLevel.High },
-                                { "Typescript", ExpLevel.Mid },
-                                { "AWS", ExpLevel.Mid },
-                                { "SQL", ExpLevel.Low },
-                                { "Mariadb", ExpLevel.None }
-                            },
-                            new("", "", "", false, "", 0, "", null)
-                        )
-                    )
-                }
-            );
         }
         finally
         {
