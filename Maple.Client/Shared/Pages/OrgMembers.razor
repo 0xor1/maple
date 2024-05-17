@@ -1,5 +1,7 @@
 ﻿@using Common.Shared
 @using Common.Shared.Auth
+@using Fluid
+@using Fluid.Parser
 @using Maple.Api.Org
 @using Maple.Api.OrgMember
 @using Maple.Client.Lib
@@ -26,6 +28,11 @@
         AllowFiltering="true"
         LoadData="LoadData"
         KeyProperty="Id">
+        <Template Context="mem">
+            <div class="w-100p h-100p">
+                @GetProfile(mem) 
+            </div>
+        </Template>
         <Columns>
             <RadzenDataGridColumn Sortable="true" Width="17em" TItem="OrgMember" Property="@nameof(OrgMember.Name)" Title="@L.S(S.Name)" FilterValue="@NameStartsWith">
                 <Template Context="m">
@@ -98,6 +105,8 @@
     private bool _isLoading = false;
     private RadzenDataGrid<OrgMember> _grid;
     private List<SkillCol> _skillCols;
+    private FluidParser _fluidParser = new ();
+    private IFluidTemplate _profileTpl;
 
     private class SkillCol
     {
@@ -110,6 +119,7 @@
         _isLoading = true;
         try
         {
+            _profileTpl = _fluidParser.Parse(Ctx.Org.Data.ProfileTemplate);
             await LoadData(null);
             _skillCols = Ctx.Org.NotNull().Data.Skills.Select(x => new SkillCol() { Name = x}).ToList();
         }
@@ -194,7 +204,20 @@
 
     private async Task Update(OrgMember m)
         => Nav.NavigateTo($"/org/{OrgId}/member/{m.Id}/update");
-            
+
+    private MarkupString GetProfile(OrgMember mem)
+    =>
+        new (_profileTpl.Render(new TemplateContext(new ProfileModel()
+        {
+            ImageUrl = mem.Data.Profile.HasImage? Api.OrgMember.DownloadImageUrl(new (OrgId, mem.Id, false)): "/wolf.png",
+            Name = mem.Name,
+            Title = mem.Data.Profile.Title,
+            Body = mem.Data.Profile.Body.Replace("\n", "<br>"),
+            Skills = mem.Data.Profile.CsvSkills.Split(',').Select(x => x.Trim()).ToList(),
+            GithubUrl = mem.Data.Profile.GithubUrl,
+            LinkedInUrl = mem.Data.Profile.LinkedInUrl
+        })));
+    
     
     public static List<RoleOpt> Roles(L l, UiCtx? ctx = null)
     {
@@ -250,4 +273,14 @@
             ExpLevel.Expert => L.S(S.ExpLevelExpert),
             _ => throw new ArgumentOutOfRangeException()};
 
+    public class ProfileModel
+    {
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public List<string> Skills { get; set; }
+        public string GithubUrl { get; set; }
+        public string? LinkedInUrl { get; set; }
+    }
 }

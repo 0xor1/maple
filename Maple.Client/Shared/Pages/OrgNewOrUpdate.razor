@@ -66,10 +66,13 @@
             get => string.Join('\n', Data.Skills);
             set => Data = Data with { Skills = value.Split('\n').Select(x => x.Trim()).ToList()};
         }
-        public string RawProfileTemplate {
+        public string RawProfileTemplate
+        {
             get => Data.ProfileTemplate;
-            set => Data = Data with { ProfileTemplate = _sanitizer.Sanitize(value) };
+            set => Data = Data with { ProfileTemplate = value /* TODO put this back in _sanitizer.Sanitize(value) */ };
+            
         }
+
         public Data Data { get; set; } = new Data(new (), "");
     }
 
@@ -102,6 +105,7 @@
             else
             {
                 org = await Api.Org.Update(new(Ctx.Org.Id, _model.OrgName, _model.Data));
+                Ctx.Org = org;
             }
             Nav.NavigateTo($"/org/{org.Id}/members");
         }

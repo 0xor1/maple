@@ -33,7 +33,7 @@ not_set,Not Set
 one_per_line,One per line
 org_confirm_delete_org,<p>Are you sure you want to delete the org <strong>{{Name}}</strong>?</p><p>This can not be undone.</p>
 org_member_invite_email_html,"<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=""{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
-org_member_invite_email_subject,{{OrgName}} - Project Management Invite
+org_member_invite_email_subject,{{OrgName}} - Maple Skill Matrix Invite
 org_member_invite_email_text,"Dear {{InviteeName}}
 
 {{InvitedByName}} has invited you to join the org: {{OrgName}}

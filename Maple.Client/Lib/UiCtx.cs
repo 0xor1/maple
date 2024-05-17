@@ -13,7 +13,7 @@ public class UiCtx
     public string? OrgId { get; private set; }
     public string? OrgMemberId { get; private set; }
     public string? SesId { get; private set; }
-    public Org? Org { get; private set; }
+    public Org? Org { get; set; }
 
     public List<OrgMember> OrgMembers { get; private set; } = new();
     public OrgMember? OrgMember => OrgMembers.FirstOrDefault(x => x.Id == OrgMemberId);
@@ -34,8 +34,12 @@ public class UiCtx
         await _ss.WaitAsync();
         try
         {
-            OrgId = orgId;
             OrgMemberId = orgMemberId;
+            if (OrgId == orgId)
+            {
+                return;
+            }
+            OrgId = orgId;
             var ses = await _auth.GetSession();
             SesId = ses.Id;
 

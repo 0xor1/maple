@@ -61,7 +61,7 @@ public static partial class S
                     "<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=\"{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}\">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
                 )
             },
-            { OrgMemberInviteEmailSubject, new("{{OrgName}} - Project Management Invite") },
+            { OrgMemberInviteEmailSubject, new("{{OrgName}} - Maple Skill Matrix Invite") },
             {
                 OrgMemberInviteEmailText,
                 new(
