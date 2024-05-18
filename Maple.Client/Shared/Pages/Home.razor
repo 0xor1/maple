@@ -26,4 +26,14 @@
 
     [CascadingParameter]
     public ISession Session { get; set; } = Common.Shared.Auth.Session.CommonDefault();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Session.IsAuthed)
+        {
+            Nav.NavigateTo("/my_orgs");
+        }
+
+        await Task.CompletedTask;
+    }
 }

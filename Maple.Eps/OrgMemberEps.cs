@@ -66,7 +66,7 @@ internal static class OrgMemberEps
             var emailClient = ctx.Get<IEmailClient>();
             var model = new
             {
-                BaseHref = config.Server.Listen,
+                BaseHref = config.Auth.BaseHref,
                 Email = auth.Email,
                 Code = auth.VerifyEmailCode,
                 OrgName = org.Name,
