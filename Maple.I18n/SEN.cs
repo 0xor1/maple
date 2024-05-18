@@ -58,14 +58,14 @@ public static partial class S
             {
                 OrgMemberInviteEmailHtml,
                 new(
-                    "<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=\"{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}\">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
+                    "<p>Dear <strong>{{InviteeName}}</strong></p><p><strong>{{InvitedByName}}</strong> has invited you to join the org: <strong>{{OrgName}}</strong></p><p><a href=\"{{BaseHref}}/cmn/auth/verify_email?email={{Email}}&code={{Code}}\">Please click this link to verify your email address and join <strong>{{OrgName}}</strong></a></p>"
                 )
             },
             { OrgMemberInviteEmailSubject, new("{{OrgName}} - Maple Skill Matrix Invite") },
             {
                 OrgMemberInviteEmailText,
                 new(
-                    "Dear {{InviteeName}}\n\n{{InvitedByName}} has invited you to join the org: {{OrgName}}\n\nPlease click this link to verify your email address and join {{OrgName}}:\n\n{{BaseHref}}/verify_email?email={{Email}}&code={{Code}}"
+                    "Dear {{InviteeName}}\n\n{{InvitedByName}} has invited you to join the org: {{OrgName}}\n\nPlease click this link to verify your email address and join {{OrgName}}:\n\n{{BaseHref}}/cmn/auth/verify_email?email={{Email}}&code={{Code}}"
                 )
             },
             { OrgMemberNewOrgMember, new("New Member") },

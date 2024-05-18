@@ -118,6 +118,7 @@
 @inject UiCtx Ctx;
 @inject IApi Api;
 @inject NavigationManager Nav;
+@inject NotificationService Notify;
 @code {
 
     [CascadingParameter]
@@ -216,11 +217,15 @@
 
     private async Task OnFileChanged(InputFileChangeEventArgs arg)
     {
+        if ((ulong?)arg.File?.Size > OrgMemberRpcs.UploadImage.MaxSize)
+        {
+            Notify.Notify(NotificationSeverity.Error, L.S(S.ImageFileMaxSize));
+        }
         if (arg.File != null)
         {
             var mem = await Api.OrgMember.UploadImage(new (OrgId, _model.Id)
             {
-                Stream = new RpcStream(arg.File.OpenReadStream(), arg.File.Name, arg.File.ContentType, false, (ulong)arg.File.Size)
+                Stream = new RpcStream(arg.File.OpenReadStream((long)OrgMemberRpcs.UploadImage.MaxSize), arg.File.Name, arg.File.ContentType, false, (ulong)arg.File.Size)
             });
             var i = Ctx.OrgMembers.FindIndex(x => x.Id == Ctx.OrgMemberId);
             Ctx.OrgMembers[i] = mem;

@@ -38,7 +38,7 @@
                 <Template Context="m">
                     <div class="flx child-no-shrink jc-s ai-c g-0h w-100p mw-100p p-rel">
                         <span class="shrink-1 ellip">@m.Name</span>
-                        @if (Ctx.HasOrgAdminPerm && m.Role >= Ctx.SesOrgMember?.Role)
+                        @if (Ctx.HasOrgAdminPerm && m.Role >= Ctx.SesOrgMember?.Role || m.Id == Session.Id)
                         {
                             <div class="flx g-0q p-abs show-on-row-mouse-over" style="right: -1em;">
                                 <RadzenButton @onclick:stopPropagation="true" Icon="edit" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.ExtraSmall" Click="_ => Update(m)"/>
