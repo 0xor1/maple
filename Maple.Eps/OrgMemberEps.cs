@@ -67,7 +67,7 @@ internal static class OrgMemberEps
             var model = new
             {
                 BaseHref = config.Auth.BaseHref,
-                Email = auth.Email,
+                Email = auth.Email.UrlEncode(),
                 Code = auth.VerifyEmailCode,
                 OrgName = org.Name,
                 InviteeName = arg.Name,
