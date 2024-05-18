@@ -222,7 +222,7 @@
     public static List<RoleOpt> Roles(L l, UiCtx? ctx = null)
     {
         var res = new List<RoleOpt>() { new(OrgMemberRole.Owner, l), new(OrgMemberRole.Admin, l), new(OrgMemberRole.Member, l) };
-        res.RemoveAll(x => x.Role < (ctx?.OrgMember?.Role ?? OrgMemberRole.Owner));
+        res.RemoveAll(x => x.Role < (ctx?.SesOrgMember?.Role ?? OrgMemberRole.Owner));
         return res;
     }
     
