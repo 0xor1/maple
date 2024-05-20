@@ -74,7 +74,7 @@
             
         }
 
-        public Data Data { get; set; } = new Data(new (), "");
+        public Data Data { get; set; } = new Data(new (), "<div>\n    <p><strong>{{Name}}</strong></p>\n    <img src=\"{{ImageUrl}}\" style=\"width: 5em; height: 5em; border-radius: 2.5em; object-fit: cover\">\n    <p><strong>{{Title}}</strong></p>\n    <p style=\"white-space: normal\">{{Body}}</p>\n    <p><strong>Skills</strong></p>\n    <ul>\n        {% for skill in Skills %}\n        <li>{{skill}}</li>\n        {% endfor %}\n    </ul>\n    <p><a href=\"{{GithubUrl}}\">Github</a> {% if LinkedInUrl  %}<a href=\"{{LinkedInUrl}}\">LinkedIn</a>{% endif %}</p>\n</div>");
     }
 
     private List<KeyDisplay> Countries => Country.Enum.Select(c => new KeyDisplay(c, L.S(c.Value))).ToList();
