@@ -65,6 +65,7 @@ public static partial class S
     public const string ProficiencyLevels = "proficiency_levels";
     public const string Profile = "profile";
     public const string ProfileTemplate = "profile_template";
+    public const string ProfileTemplateGuide = "profile_template_guide";
     public const string Required = "required";
     public const string Skill = "skill";
     public const string Skills = "skills";

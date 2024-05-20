@@ -63,6 +63,7 @@ org_your_name,Your Name
 proficiency_levels,Proficiency Levels
 profile,Profile
 profile_template,Profile Template
+profile_template_guide,"Tokens: {{Name}}, {{ImageUrl}}, {{Title}}, {{Body}}, {% for skill in Skills %} {{skill}} {% endfor %}, {{GithubUrl}}, {{LinkedInUrl}}"
 required,Required
 skill,Skill
 skills,Skills

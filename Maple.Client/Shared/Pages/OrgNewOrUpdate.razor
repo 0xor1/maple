@@ -34,7 +34,8 @@
         <RadzenTextArea Rows="7" Cols="22" Placeholder="@L.S(S.OnePerLine)" @bind-Value="_model.RawSkills"/>
     </div>
     <div class="flx col ai-stretch">
-        <RadzenLabel class="m-b-0q" Text="@L.S(S.ProfileTemplate)"/>
+        <RadzenLabel class="m-0" Text="@L.S(S.ProfileTemplate)"/>
+        <RadzenText class="m-0 m-b-0q" TextStyle="TextStyle.Subtitle2">@L.H(S.ProfileTemplateGuide)</RadzenText>
         <RadzenTextArea Rows="15" Cols="50" @bind-Value="_model.RawProfileTemplate"/>
     </div>
     

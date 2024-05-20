@@ -90,6 +90,12 @@ public static partial class S
             { ProficiencyLevels, new("Proficiency Levels") },
             { Profile, new("Profile") },
             { ProfileTemplate, new("Profile Template") },
+            {
+                ProfileTemplateGuide,
+                new(
+                    "Tokens: {{Name}}, {{ImageUrl}}, {{Title}}, {{Body}}, {% for skill in Skills %} {{skill}} {% endfor %}, {{GithubUrl}}, {{LinkedInUrl}}"
+                )
+            },
             { Required, new("Required") },
             { Skill, new("Skill") },
             { Skills, new("Skills") },
