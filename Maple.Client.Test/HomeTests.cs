@@ -33,9 +33,9 @@ public class HomeTests : TestBase
         var aliUi = ali.Ctx.RenderComponent<Maple.Client.Shared.Pages.Home>(
             ps => ps.Add(p => p.Session, aliSes)
         );
-        var aliMyCounterBtn = aliUi.Find(".goto-my-counter");
+        var aliMyCounterBtn = aliUi.Find(".goto-my-orgs");
         aliMyCounterBtn.Click(new MouseEventArgs());
-        Assert.EndsWith($"/{aliSes.Id}/counter", navMan.Uri);
+        Assert.EndsWith($"/my_orgs", navMan.Uri);
         ali.Ctx.DisposeComponents();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Common.Shared;
+using MessagePack;
 
 namespace Maple.Api.Org;
 
@@ -45,25 +46,47 @@ public static class OrgRpcs
     public static readonly Rpc<Exact, Nothing> Delete = new("/org/delete");
 }
 
+[MessagePackObject]
 public record Org(
-    string Id,
-    string Name,
-    DateTime CreatedOn,
-    Data Data,
-    OrgMember.OrgMember? Member
+    [property: Key(0)] string Id,
+    [property: Key(1)] string Name,
+    [property: Key(2)] DateTime CreatedOn,
+    [property: Key(3)] Data Data,
+    [property: Key(4)] OrgMember.OrgMember? Member
 );
 
-public record KeyDisplay(Key Key, string Display);
+[MessagePackObject]
+public record KeyDisplay([property: Key(0)] Key Key, [property: Key(1)] string Display);
 
-public record Data(List<string> Skills, string ProfileTemplate);
+[MessagePackObject]
+public record Data(
+    [property: Key(0)] List<string> Skills,
+    [property: Key(1)] string ProfileTemplate
+);
 
-public record Create(string Name, string OwnerMemberName, Key OwnerMemberCountry, Data Data);
+[MessagePackObject]
+public record Create(
+    [property: Key(0)] string Name,
+    [property: Key(1)] string OwnerMemberName,
+    [property: Key(2)] Key OwnerMemberCountry,
+    [property: Key(3)] Data Data
+);
 
-public record Get(OrgOrderBy OrderBy = OrgOrderBy.Name, bool Asc = true);
+[MessagePackObject]
+public record Get(
+    [property: Key(0)] OrgOrderBy OrderBy = OrgOrderBy.Name,
+    [property: Key(1)] bool Asc = true
+);
 
-public record Update(string Id, string Name, Data Data);
+[MessagePackObject]
+public record Update(
+    [property: Key(0)] string Id,
+    [property: Key(1)] string Name,
+    [property: Key(2)] Data Data
+);
 
-public record Exact(string Id);
+[MessagePackObject]
+public record Exact([property: Key(0)] string Id);
 
 public enum OrgOrderBy
 {

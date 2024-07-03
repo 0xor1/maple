@@ -1,4 +1,5 @@
 ﻿using Common.Shared;
+using MessagePack;
 
 namespace Maple.Api.OrgMember;
 
@@ -56,42 +57,58 @@ public static class OrgMemberRpcs
     public static readonly Rpc<Exact, Nothing> Delete = new("/org_member/delete");
 }
 
+[MessagePackObject]
 public record OrgMember(
-    string Org,
-    string Id,
-    string Name,
-    OrgMemberRole Role,
-    Key Country,
-    Data Data
+    [property: Key(0)] string Org,
+    [property: Key(1)] string Id,
+    [property: Key(2)] string Name,
+    [property: Key(3)] OrgMemberRole Role,
+    [property: Key(4)] Key Country,
+    [property: Key(5)] Data Data
 );
 
-public record Data(Dictionary<string, ExpLevel> SkillMatrix, Profile Profile);
+[MessagePackObject]
+public record Data(
+    [property: Key(0)] Dictionary<string, ExpLevel> SkillMatrix,
+    [property: Key(1)] Profile Profile
+);
 
+[MessagePackObject]
 public record Profile(
-    string Title,
-    string Body,
-    string CsvSkills,
-    bool HasImage,
-    string ImageType,
-    ulong ImageSize,
-    string GithubUrl,
-    string? LinkedInUrl
+    [property: Key(0)] string Title,
+    [property: Key(1)] string Body,
+    [property: Key(2)] string CsvSkills,
+    [property: Key(3)] bool HasImage,
+    [property: Key(4)] string ImageType,
+    [property: Key(5)] ulong ImageSize,
+    [property: Key(6)] string GithubUrl,
+    [property: Key(7)] string? LinkedInUrl
 );
 
-public record Get(string Org);
+[MessagePackObject]
+public record Get([property: Key(0)] string Org);
 
-public record Invite(string Org, string Email, string Name, OrgMemberRole Role, Key Country);
+[MessagePackObject]
+public record Invite(
+    [property: Key(0)] string Org,
+    [property: Key(1)] string Email,
+    [property: Key(2)] string Name,
+    [property: Key(3)] OrgMemberRole Role,
+    [property: Key(4)] Key Country
+);
 
+[MessagePackObject]
 public record Update(
-    string Org,
-    string Id,
-    string Name,
-    OrgMemberRole Role,
-    Key Country,
-    Data Data
+    [property: Key(0)] string Org,
+    [property: Key(1)] string Id,
+    [property: Key(2)] string Name,
+    [property: Key(3)] OrgMemberRole Role,
+    [property: Key(4)] Key Country,
+    [property: Key(5)] Data Data
 );
 
-public record Exact(string Org, string Id);
+[MessagePackObject]
+public record Exact([property: Key(0)] string Org, [property: Key(1)] string Id);
 
 public enum OrgMemberRole
 {
@@ -115,6 +132,12 @@ public enum ExpLevel
     Expert
 }
 
-public record UploadImage(string Org, string Id) : HasStream;
+[MessagePackObject]
+public record UploadImage([property: Key(0)] string Org, [property: Key(1)] string Id) : HasStream;
 
-public record DownloadImage(string Org, string Id, bool IsDownload);
+[MessagePackObject]
+public record DownloadImage(
+    [property: Key(0)] string Org,
+    [property: Key(1)] string Id,
+    [property: Key(2)] bool IsDownload
+);
