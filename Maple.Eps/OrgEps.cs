@@ -40,7 +40,7 @@ public static class OrgEps
         {
             Ep<Create, Org>.DbTx<MapleDb>(OrgRpcs.Create, Create),
             new Ep<Exact, Org>(OrgRpcs.GetOne, GetOne),
-            new Ep<Get, IReadOnlyList<Org>>(OrgRpcs.Get, Get),
+            new Ep<Get, List<Org>>(OrgRpcs.Get, Get),
             Ep<Update, Org>.DbTx<MapleDb>(OrgRpcs.Update, Update),
             Ep<Exact, Nothing>.DbTx<MapleDb>(OrgRpcs.Delete, Delete)
         };
@@ -90,7 +90,7 @@ public static class OrgEps
         return org.NotNull().ToApi(m);
     }
 
-    private static async Task<IReadOnlyList<Org>> Get(IRpcCtx ctx, Get arg)
+    private static async Task<List<Org>> Get(IRpcCtx ctx, Get arg)
     {
         var ses = ctx.GetAuthedSession();
         var db = ctx.Get<MapleDb>();
@@ -99,10 +99,11 @@ public static class OrgEps
         var qry = db.Orgs.Where(x => oIds.Contains(x.Id));
         qry = arg switch
         {
-            (OrgOrderBy.Name, true) => qry.OrderBy(x => x.Name),
-            (OrgOrderBy.CreatedOn, true) => qry.OrderBy(x => x.CreatedOn),
-            (OrgOrderBy.Name, false) => qry.OrderByDescending(x => x.Name),
-            (OrgOrderBy.CreatedOn, false) => qry.OrderByDescending(x => x.CreatedOn),
+            { OrderBy: OrgOrderBy.Name, Asc: true } => qry.OrderBy(x => x.Name),
+            { OrderBy: OrgOrderBy.CreatedOn, Asc: true } => qry.OrderBy(x => x.CreatedOn),
+            { OrderBy: OrgOrderBy.Name, Asc: false } => qry.OrderByDescending(x => x.Name),
+            { OrderBy: OrgOrderBy.CreatedOn, Asc: false }
+                => qry.OrderByDescending(x => x.CreatedOn),
         };
         var os = await qry.ToListAsync(ctx.Ctkn);
         return os.Select(x => x.ToApi(ms.Single(y => y.Org == x.Id))).ToList();

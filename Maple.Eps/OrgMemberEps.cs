@@ -17,7 +17,7 @@ internal static class OrgMemberEps
         {
             Ep<Invite, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.Invite, Invite),
             Ep<Get, List<OrgMember>>.DbTx<MapleDb>(OrgMemberRpcs.Get, Get),
-            Ep<Update, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.Update, Update),
+            Ep<OrgMember, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.Update, Update),
             Ep<UploadImage, OrgMember>.DbTx<MapleDb>(OrgMemberRpcs.UploadImage, UploadImage),
             Ep<DownloadImage, HasStream>.DbTx<MapleDb>(OrgMemberRpcs.DownloadImage, DownloadImage),
             Ep<Exact, Nothing>.DbTx<MapleDb>(OrgMemberRpcs.Delete, Delete)
@@ -95,7 +95,12 @@ internal static class OrgMemberEps
             .Select(x => x.ToApi())
             .ToListAsync(ctx.Ctkn);
 
-    private static async Task<OrgMember> Update(IRpcCtx ctx, MapleDb db, ISession ses, Update arg)
+    private static async Task<OrgMember> Update(
+        IRpcCtx ctx,
+        MapleDb db,
+        ISession ses,
+        OrgMember arg
+    )
     {
         var sesOrgMem = await db.OrgMembers
             .Where(x => x.Org == arg.Org && x.Id == ses.Id)

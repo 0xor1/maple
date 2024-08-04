@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="0xor1.Common.Shared" Version="4.0.4" />
+        <PackageReference Include="0xor1.Common.Shared" Version="5.0.0" />
         <PackageReference Include="CSharpier.MsBuild" Version="0.26.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,7 +18,7 @@
 
     <Target Name="GenerateI18n" BeforeTargets="BeforeBuild">
         <Exec Command="dotnet tool restore"/>
-        <Exec Command="dotnet tool run dotnet-common-cmds i18n &quot;$(MSBuildProjectDirectory)&quot; $(MSBuildProjectName) false"/>
+        <Exec Command="dotnet tool run dotnet-common-cli i18n &quot;$(MSBuildProjectDirectory)&quot; $(MSBuildProjectName) false"/>
     </Target>
 
 </Project>

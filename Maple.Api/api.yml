@@ -1,0 +1,192 @@
+sections:
+  - key: Org
+    types:
+      - key: Org
+        fields:
+          - key: Id
+            type: string
+          - key: Name
+            type: string
+          - key: CreatedOn
+            type: DateTime
+          - key: Data
+            type: Data
+          - key: Member
+            type: OrgMember.OrgMember?
+      - key: KeyDisplay
+        fields:
+          - key: Key
+            type: Key
+          - key: Display
+            type: string
+      - key: Data
+        fields:
+          - key: Skills
+            type: List<string>
+          - key: ProfileTemplate
+            type: string
+      - key: Create
+        fields:
+          - key: Name
+            type: string
+          - key: OwnerMemberName
+            type: string
+          - key: OwnerMemberCountry
+            type: Key
+          - key: Data
+            type: Data
+      - key: Get
+        fields:
+          - key: OrderBy
+            type: OrgOrderBy
+            default: OrgOrderBy.Name
+          - key: Asc
+            type: bool
+            default: "true"
+      - key: Update
+        fields:
+          - key: Id
+            type: string
+          - key: Name
+            type: string
+          - key: Data
+            type: Data
+      - key: Exact
+        fields:
+          - key: Id
+            type: string
+    enums:
+      - key: OrgOrderBy
+        vals:
+          - Name
+          - CreatedOn
+    eps:
+      - key: Create
+        arg: Create
+        res: Org
+      - key: GetOne
+        arg: Exact
+        res: Org
+      - key: Get
+        arg: Get
+        res: List<Org>
+      - key: Update
+        arg: Update
+        res: Org
+      - key: Delete
+        arg: Exact
+        res: Nothing
+  - key: OrgMember
+    types:
+      - key: OrgMember
+        fields:
+          - key: Org
+            type: string
+          - key: Id
+            type: string
+          - key: Name
+            type: string
+          - key: Role
+            type: OrgMemberRole
+          - key: Country
+            type: Key
+          - key: Data
+            type: Data
+      - key: Data
+        fields:
+          - key: SkillMatrix
+            type: Dictionary<string, ExpLevel>
+          - key: Profile
+            type: Profile
+      - key: Profile
+        fields:
+          - key: Title
+            type: string
+          - key: Body
+            type: string
+          - key: CsvSkills
+            type: string
+          - key: HasImage
+            type: bool
+          - key: ImageType
+            type: string
+          - key: ImageSize
+            type: ulong
+          - key: GithubUrl
+            type: string
+          - key: LinkedInUrl
+            type: string?
+      - key: Get
+        fields:
+          - key: Org
+            type: string
+      - key: Invite
+        fields:
+          - key: Org
+            type: string
+          - key: Email
+            type: string
+          - key: Name
+            type: string
+          - key: Role
+            type: OrgMemberRole
+          - key: Country
+            type: Key
+      - key: Exact
+        fields:
+          - key: Org
+            type: string
+          - key: Id
+            type: string
+      - key: UploadImage
+        extends: HasStream
+        fields:
+          - key: Org
+            type: string
+          - key: Id
+            type: string
+      - key: DownloadImage
+        fields:
+          - key: Org
+            type: string
+          - key: Id
+            type: string
+          - key: IsDownload
+            type: bool
+    enums:
+      - key: OrgMemberRole
+        vals:
+          - Owner
+          - Admin
+          - Member
+      - key: OrgMemberOrderBy
+        vals:
+          - Role
+          - Name
+      - key: ExpLevel
+        vals:
+          - None
+          - Low
+          - Mid
+          - High
+          - Expert
+    eps:
+      - key: Invite
+        arg: Invite
+        res: OrgMember
+      - key: Get
+        arg: Get
+        res: List<OrgMember>
+      - key: Update
+        arg: OrgMember
+        res: OrgMember
+      - key: UploadImage
+        arg: UploadImage
+        res: OrgMember
+      - key: DownloadImage
+        arg: DownloadImage
+        res: HasStream
+        get_url: true
+      - key: Delete
+        arg: Exact
+        res: Nothing
